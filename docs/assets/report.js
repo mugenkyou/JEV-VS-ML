@@ -748,6 +748,51 @@ All offline checks PASSED. Ready for evaluation.</span>`,
     });
   };
 
+  // --- Mobile Sidebar Navigation ---
+  const openMobileSidebar = () => {
+    const sidebar = document.getElementById('mobile-sidebar-nav');
+    const backdrop = document.getElementById('mobile-nav-backdrop');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    if (sidebar) {
+      sidebar.classList.add('open');
+      sidebar.setAttribute('aria-hidden', 'false');
+    }
+    if (backdrop) backdrop.classList.add('open');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMobileSidebar = () => {
+    const sidebar = document.getElementById('mobile-sidebar-nav');
+    const backdrop = document.getElementById('mobile-nav-backdrop');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    if (sidebar) {
+      sidebar.classList.remove('open');
+      sidebar.setAttribute('aria-hidden', 'true');
+    }
+    if (backdrop) backdrop.classList.remove('open');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+    if (!currentOpenDataset) {
+      document.body.style.overflow = '';
+    }
+  };
+
+  const initMobileSidebar = () => {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const closeBtn = document.getElementById('mobile-sidebar-close');
+    const backdrop = document.getElementById('mobile-nav-backdrop');
+
+    if (toggleBtn) toggleBtn.addEventListener('click', openMobileSidebar);
+    if (closeBtn) closeBtn.addEventListener('click', closeMobileSidebar);
+    if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
+
+    document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMobileSidebar();
+      });
+    });
+  };
+
   // --- Copy Buttons ---
   const initCopyButtons = () => {
     document.querySelectorAll('.copy-btn').forEach(btn => {
@@ -769,6 +814,7 @@ All offline checks PASSED. Ready for evaluation.</span>`,
   // --- Init ---
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initMobileSidebar();
     initPipeline();
     initTerminal();
     initCopyButtons();
@@ -783,7 +829,10 @@ All offline checks PASSED. Ready for evaluation.</span>`,
     if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeDrawer();
+      if (e.key === 'Escape') {
+        closeDrawer();
+        closeMobileSidebar();
+      }
     });
 
     document.querySelectorAll('input[name="panel"]').forEach(el => el.addEventListener('change', render));

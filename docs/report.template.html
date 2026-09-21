@@ -37,9 +37,16 @@
         <button id="theme-toggle" class="btn btn-outline btn-icon" title="Toggle color theme" aria-label="Toggle theme">
           <span aria-hidden="true">🌙</span>
         </button>
-        <a href="https://github.com/mugenkyou/JEV-VS-ML" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
+        <a href="https://github.com/mugenkyou/JEV-VS-ML" class="btn btn-outline header-github-btn" target="_blank" rel="noopener noreferrer">
           GitHub ↗
         </a>
+        <button id="mobile-menu-toggle" class="btn btn-outline btn-icon mobile-menu-btn" title="Open navigation menu" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-sidebar-nav">
+          <svg class="hamburger-icon-svg" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </div>
     <nav class="mobile-nav-strip font-mono" aria-label="Mobile Navigation">
@@ -52,6 +59,44 @@
       <a href="#limitations">Limitations</a>
     </nav>
   </header>
+
+  <!-- Mobile Slide-In Side Navbar -->
+  <div id="mobile-nav-backdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+  <aside id="mobile-sidebar-nav" class="mobile-sidebar-nav" aria-label="Mobile Sidebar Navigation" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mobile-sidebar-header">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">Jev-vs-ML</span>
+        <span class="brand-badge font-mono">3.0.1</span>
+      </div>
+      <button id="mobile-sidebar-close" class="btn btn-outline btn-icon font-mono" aria-label="Close navigation menu">
+        ✕
+      </button>
+    </div>
+    <div class="mobile-sidebar-body">
+      <div class="mobile-sidebar-section-tag font-mono">Sections</div>
+      <nav class="mobile-sidebar-links font-mono">
+        <a href="#results" class="mobile-sidebar-link"><span class="link-idx">01</span> Results Explorer</a>
+        <a href="#visuals" class="mobile-sidebar-link"><span class="link-idx">02</span> Range & Difference Visuals</a>
+        <a href="#analysis" class="mobile-sidebar-link"><span class="link-idx">03</span> Empirical Findings</a>
+        <a href="#methodology" class="mobile-sidebar-link"><span class="link-idx">04</span> Protocol & Pipeline</a>
+        <a href="#models" class="mobile-sidebar-link"><span class="link-idx">05</span> Model Architecture Matrix</a>
+        <a href="#reproducibility" class="mobile-sidebar-link"><span class="link-idx">06</span> Execution & CLI</a>
+        <a href="#limitations" class="mobile-sidebar-link"><span class="link-idx">07</span> Boundaries & Scope</a>
+      </nav>
+
+      <div class="mobile-sidebar-section-tag font-mono" style="margin-top: 1.5rem;">Artifacts & Repos</div>
+      <div class="mobile-sidebar-links font-mono">
+        <a href="https://github.com/mugenkyou/JEV-VS-ML" class="mobile-sidebar-link" target="_blank" rel="noopener noreferrer">GitHub Repository ↗</a>
+        <a href="https://github.com/mugenkyou/JEV-VS-ML/blob/main/jev_benchmark_v3.ipynb" class="mobile-sidebar-link" target="_blank" rel="noopener noreferrer">Jupyter Notebook ↗</a>
+        <a href="data/raw_balanced_accuracy.csv" class="mobile-sidebar-link" download>Download Raw CSV ↓</a>
+        <a href="data/adjusted_balanced_accuracy.csv" class="mobile-sidebar-link" download>Download Calibrated CSV ↓</a>
+      </div>
+    </div>
+    <div class="mobile-sidebar-footer font-mono">
+      <span>Protocol 3.0.1 · MIT License</span>
+    </div>
+  </aside>
 
   <main>
     <!-- Hero Section (Editorial 2-Column + Benchmark Map) -->
