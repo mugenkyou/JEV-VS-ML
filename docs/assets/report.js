@@ -2,6 +2,9 @@
   'use strict';
 
   // --- Theme Management ---
+  const sunIcon = `<svg class="theme-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+  const moonIcon = `<svg class="theme-icon-svg" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
   const initTheme = () => {
     const saved = localStorage.getItem('theme');
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -13,9 +16,8 @@
   const updateThemeToggleUI = (theme) => {
     const btn = document.getElementById('theme-toggle');
     if (!btn) return;
-    btn.innerHTML = theme === 'dark' 
-      ? '<span aria-hidden="true">☀️</span><span class="sr-only">Switch to light mode</span>' 
-      : '<span aria-hidden="true">🌙</span><span class="sr-only">Switch to dark mode</span>';
+    btn.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+    btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
   };
 
   const toggleTheme = () => {
@@ -96,7 +98,7 @@
               <span class="font-mono text-muted">${s.mean.toFixed(1)} ± ${s.sd.toFixed(1)}%</span>
             </div>
             <div style="position: relative; height: 8px; background: var(--secondary); border-radius: 4px; border: 1px solid var(--border);">
-              <div style="position: absolute; left: ${minX}%; width: ${Math.max(2, maxX - minX)}%; height: 100%; background: ${isJev ? 'var(--bar-jev)' : 'var(--bar-classic)'}; opacity: 0.3; border-radius: 2px;"></div>
+              <div style="position: absolute; left: ${minX}%; width: ${Math.max(2, maxX - minX)}%; height: 100%; background: ${isJev ? 'var(--bar-jev)' : 'var(--bar-classic)'}; opacity: 0.35; border-radius: 2px;"></div>
               <div style="position: absolute; left: ${s.mean}%; top: -2px; width: 10px; height: 10px; border-radius: 50%; background: ${isJev ? 'var(--bar-jev)' : 'var(--bar-classic)'}; transform: translateX(-50%); border: 2px solid var(--card);"></div>
             </div>
           </div>
@@ -313,35 +315,18 @@
     }).join('');
   };
 
-  const renderFullMatrix = (panelData, rows) => {
-    const table = document.getElementById('full-table');
-    if (!table) return;
-
-    const models = ['Jev zero-shot', 'Jev few-shot', ...panelData.models.filter(m => !m.startsWith('Jev '))];
-    table.innerHTML = `
-      <caption class="sr-only">Balanced accuracy: mean ± sample standard deviation, three seeds.</caption>
-      <thead>
-        <tr>
-          <th scope="col" class="sticky-col">Dataset</th>
-          ${models.map(m => `<th scope="col" class="text-right">${escape(m)}</th>`).join('')}
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map(row => {
-          const best = Math.max(...Object.values(row.scores).map(s => s.mean));
-          return `
-            <tr onclick="window.openDrawer('${escape(row.dataset)}')">
-              <th scope="row" class="sticky-col font-medium">${escape(row.dataset)}</th>
-              ${models.map(m => {
-                const s = row.scores[m];
-                const isBest = s.mean === best;
-                return `<td class="text-right font-mono ${isBest ? 'score-winner' : ''}">${s.mean.toFixed(1)} <span class="sd-sub">±${s.sd.toFixed(1)}</span></td>`;
-              }).join('')}
-            </tr>
-          `;
-        }).join('')}
-      </tbody>
-    `;
+  const updateSortIndicators = () => {
+    document.querySelectorAll('th.sortable').forEach(th => {
+      const col = th.getAttribute('data-sort');
+      const baseText = th.textContent.replace(/[ ↕▲▼]/g, '');
+      if (col === currentSort.column) {
+        th.textContent = `${baseText} ${currentSort.direction === 'asc' ? '▲' : '▼'}`;
+        th.style.color = 'var(--foreground)';
+      } else {
+        th.textContent = `${baseText} ↕`;
+        th.style.color = '';
+      }
+    });
   };
 
   // --- Main Render Dispatcher ---
@@ -379,19 +364,11 @@
       csvBtn.setAttribute('download', `${panel}_balanced_accuracy.csv`);
     }
 
-    // Update Context Note
-    const noteEl = document.getElementById('panel-note');
-    if (noteEl) {
-      noteEl.textContent = panel === 'adjusted'
-        ? 'Adjusted: Binary decision thresholds calibrated on dedicated labeled policy split (up to 500 rows). Jev “zero-shot” describes prompt conditioning only. Multiclass tasks remain unadjusted.'
-        : 'Raw: Default model decision thresholds without post-hoc adjustment. Jev zero-shot operates strictly without labeled examples or policy threshold fitting.';
-    }
-
     renderDumbbellChart(rows);
     renderDivergingChart(rows);
     renderSwissGrid(rows);
     renderSummaryTable(rows);
-    renderFullMatrix(panelData, rows);
+    updateSortIndicators();
   };
 
   // Expose global drawer helper
