@@ -20,7 +20,12 @@ window.BENCHMARK = {
       {
         "dataset": "AG News",
         "kind": "text",
+        "domain": "Text",
+        "classes": 4,
         "testRows": 1000,
+        "description": "Topic classification across 4 news categories: World, Sports, Business, and Sci/Tech.",
+        "classesDetail": "4 classes: World (25%), Sports (25%), Business (25%), Sci/Tech (25%)",
+        "metrics": "Balanced Accuracy (unweighted average recall across classes)",
         "scores": {
           "Logistic regression": {
             "mean": 87.4,
@@ -110,12 +115,18 @@ window.BENCHMARK = {
         "best": 88.4,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -0.9000000000000057
       },
       {
         "dataset": "Banking77",
         "kind": "text",
+        "domain": "Text",
+        "classes": 77,
         "testRows": 1500,
+        "description": "Fine-grained customer service intent classification across 77 online banking categories.",
+        "classesDetail": "77 fine-grained intent classes in banking customer support",
+        "metrics": "Balanced Accuracy (majority baseline = 1.3%)",
         "scores": {
           "Logistic regression": {
             "mean": 89.4,
@@ -205,12 +216,18 @@ window.BENCHMARK = {
         "best": 89.7,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -10.799999999999997
       },
       {
         "dataset": "SMS Spam",
         "kind": "text",
+        "domain": "Text",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Mobile phone SMS spam detection on imbalanced communication messages.",
+        "classesDetail": "2 classes: Ham (legitimate) vs. Spam",
+        "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
             "mean": 86.4,
@@ -300,12 +317,18 @@ window.BENCHMARK = {
         "best": 95.0,
         "bestModels": [
           "Naive Bayes"
-        ]
+        ],
+        "delta": 1.0999999999999943
       },
       {
         "dataset": "IMDb",
         "kind": "text",
+        "domain": "Text",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Movie review sentiment polarity classification from long-form user reviews.",
+        "classesDetail": "2 classes: Positive vs. Negative",
+        "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
             "mean": 88.4,
@@ -395,12 +418,18 @@ window.BENCHMARK = {
         "best": 88.4,
         "bestModels": [
           "Logistic regression"
-        ]
+        ],
+        "delta": 7.8999999999999915
       },
       {
         "dataset": "Bank Marketing",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Direct marketing phone campaign prediction of client term deposit subscriptions.",
+        "classesDetail": "2 classes: Subscribed (yes) vs. Not subscribed (no)",
+        "metrics": "Balanced Accuracy with demographic, economic, and contact features",
         "scores": {
           "Logistic regression": {
             "mean": 58.0,
@@ -490,12 +519,18 @@ window.BENCHMARK = {
         "best": 71.8,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -18.4
       },
       {
         "dataset": "Online Shoppers",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 1000,
+        "description": "E-commerce session revenue purchasing intention from real-time web browsing analytics.",
+        "classesDetail": "2 classes: Purchase (True) vs. No purchase (False)",
+        "metrics": "Balanced Accuracy across numerical web session attributes",
         "scores": {
           "Logistic regression": {
             "mean": 63.8,
@@ -585,12 +620,18 @@ window.BENCHMARK = {
         "best": 69.1,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -17.699999999999996
       },
       {
         "dataset": "Breast Cancer",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 114,
+        "description": "Wisconsin diagnostic clinical features for malignant versus benign tumor classification.",
+        "classesDetail": "2 classes: Malignant vs. Benign (small holdout n=114)",
+        "metrics": "Balanced Accuracy across 30 nuclear feature dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 99.5,
@@ -681,12 +722,18 @@ window.BENCHMARK = {
         "bestModels": [
           "SVM",
           "k-NN"
-        ]
+        ],
+        "delta": -39.0
       },
       {
         "dataset": "Iris",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 3,
         "testRows": 30,
+        "description": "Morphometric iris flower species classification from sepal/petal measurements.",
+        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (n=30 holdout)",
+        "metrics": "Balanced Accuracy across 4 morphometric measurements",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,
@@ -781,7 +828,8 @@ window.BENCHMARK = {
           "Naive Bayes",
           "Hist gradient boost",
           "Voting ensemble"
-        ]
+        ],
+        "delta": -3.0
       }
     ]
   },
@@ -806,7 +854,12 @@ window.BENCHMARK = {
       {
         "dataset": "AG News",
         "kind": "text",
+        "domain": "Text",
+        "classes": 4,
         "testRows": 1000,
+        "description": "Topic classification across 4 news categories: World, Sports, Business, and Sci/Tech.",
+        "classesDetail": "4 classes: World (25%), Sports (25%), Business (25%), Sci/Tech (25%)",
+        "metrics": "Balanced Accuracy (unweighted average recall across classes)",
         "scores": {
           "Logistic regression": {
             "mean": 87.4,
@@ -896,12 +949,18 @@ window.BENCHMARK = {
         "best": 88.4,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -0.9000000000000057
       },
       {
         "dataset": "Banking77",
         "kind": "text",
+        "domain": "Text",
+        "classes": 77,
         "testRows": 1500,
+        "description": "Fine-grained customer service intent classification across 77 online banking categories.",
+        "classesDetail": "77 fine-grained intent classes in banking customer support",
+        "metrics": "Balanced Accuracy (majority baseline = 1.3%)",
         "scores": {
           "Logistic regression": {
             "mean": 89.4,
@@ -991,12 +1050,18 @@ window.BENCHMARK = {
         "best": 89.7,
         "bestModels": [
           "SVM"
-        ]
+        ],
+        "delta": -10.799999999999997
       },
       {
         "dataset": "SMS Spam",
         "kind": "text",
+        "domain": "Text",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Mobile phone SMS spam detection on imbalanced communication messages.",
+        "classesDetail": "2 classes: Ham (legitimate) vs. Spam",
+        "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
             "mean": 95.6,
@@ -1086,12 +1151,18 @@ window.BENCHMARK = {
         "best": 96.3,
         "bestModels": [
           "Naive Bayes"
-        ]
+        ],
+        "delta": -0.3999999999999915
       },
       {
         "dataset": "IMDb",
         "kind": "text",
+        "domain": "Text",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Movie review sentiment polarity classification from long-form user reviews.",
+        "classesDetail": "2 classes: Positive vs. Negative",
+        "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
             "mean": 88.3,
@@ -1181,12 +1252,18 @@ window.BENCHMARK = {
         "best": 88.3,
         "bestModels": [
           "Logistic regression"
-        ]
+        ],
+        "delta": 7.799999999999997
       },
       {
         "dataset": "Bank Marketing",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 1000,
+        "description": "Direct marketing phone campaign prediction of client term deposit subscriptions.",
+        "classesDetail": "2 classes: Subscribed (yes) vs. Not subscribed (no)",
+        "metrics": "Balanced Accuracy with demographic, economic, and contact features",
         "scores": {
           "Logistic regression": {
             "mean": 68.9,
@@ -1276,12 +1353,18 @@ window.BENCHMARK = {
         "best": 73.3,
         "bestModels": [
           "Voting ensemble"
-        ]
+        ],
+        "delta": -13.599999999999994
       },
       {
         "dataset": "Online Shoppers",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 1000,
+        "description": "E-commerce session revenue purchasing intention from real-time web browsing analytics.",
+        "classesDetail": "2 classes: Purchase (True) vs. No purchase (False)",
+        "metrics": "Balanced Accuracy across numerical web session attributes",
         "scores": {
           "Logistic regression": {
             "mean": 69.3,
@@ -1371,12 +1454,18 @@ window.BENCHMARK = {
         "best": 71.2,
         "bestModels": [
           "Voting ensemble"
-        ]
+        ],
+        "delta": -19.400000000000006
       },
       {
         "dataset": "Breast Cancer",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 2,
         "testRows": 114,
+        "description": "Wisconsin diagnostic clinical features for malignant versus benign tumor classification.",
+        "classesDetail": "2 classes: Malignant vs. Benign (small holdout n=114)",
+        "metrics": "Balanced Accuracy across 30 nuclear feature dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,
@@ -1466,12 +1555,18 @@ window.BENCHMARK = {
         "best": 100.0,
         "bestModels": [
           "Logistic regression"
-        ]
+        ],
+        "delta": -11.599999999999994
       },
       {
         "dataset": "Iris",
         "kind": "tabular",
+        "domain": "Tabular",
+        "classes": 3,
         "testRows": 30,
+        "description": "Morphometric iris flower species classification from sepal/petal measurements.",
+        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (n=30 holdout)",
+        "metrics": "Balanced Accuracy across 4 morphometric measurements",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,
@@ -1566,7 +1661,8 @@ window.BENCHMARK = {
           "Naive Bayes",
           "Hist gradient boost",
           "Voting ensemble"
-        ]
+        ],
+        "delta": -3.0
       }
     ]
   }
