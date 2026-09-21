@@ -16,8 +16,6 @@
   <script defer src="assets/report.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#results">Skip to benchmark results</a>
-
   <!-- Minimal Header -->
   <header class="site-header">
     <div class="container header-inner">
@@ -27,12 +25,12 @@
       </div>
       <nav class="nav-links" aria-label="Main Navigation">
         <a href="#results">Results</a>
+        <a href="#visuals">Visuals</a>
         <a href="#analysis">Findings</a>
         <a href="#methodology">Methodology</a>
         <a href="#models">Models</a>
         <a href="#reproducibility">Reproduce</a>
         <a href="#limitations">Limitations</a>
-        <a href="#artifacts">Artifacts</a>
       </nav>
       <div class="nav-actions">
         <button id="theme-toggle" class="btn btn-outline btn-icon" title="Toggle color theme" aria-label="Toggle theme">
@@ -46,93 +44,160 @@
   </header>
 
   <main>
-    <!-- Hero Section -->
+    <!-- Hero Section (Editorial 2-Column + Benchmark Map) -->
     <section class="hero-section">
       <div class="container">
-        <div class="hero-eyebrow">
-          <span>Benchmark Report</span>
-          <span class="meta-dot"></span>
-          <span>Protocol 3.0.1</span>
-          <span class="meta-dot"></span>
-          <span>September 2026</span>
-        </div>
-        <h1 class="hero-title">Jev vs. Machine Learning</h1>
-        <p class="hero-lead">
-          An empirical benchmark comparing Jev with conventional machine-learning pipelines across text and tabular classification tasks.
-        </p>
-        <div class="hero-meta-row font-mono">
-          <span class="meta-item">Metric: Balanced Accuracy</span>
-          <span class="meta-dot"></span>
-          <span class="meta-item">3 Training Seeds (2027, 2028, 2029)</span>
-          <span class="meta-dot"></span>
-          <span class="meta-item">Fixed Test Holdout (Seed 20260920)</span>
-          <span class="meta-dot"></span>
-          <span class="meta-item">Raw & Policy-Calibrated Panels</span>
-        </div>
-        <div class="hero-actions">
-          <a href="#results" class="btn btn-primary">View results ↓</a>
-          <a href="#methodology" class="btn btn-outline">Read methodology</a>
-          <a href="https://github.com/mugenkyou/JEV-VS-ML" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a>
+        <div class="hero-grid">
+          <div>
+            <div class="hero-eyebrow">
+              <span>Benchmark Report</span>
+              <span>·</span>
+              <span>Protocol 3.0.1</span>
+              <span>·</span>
+              <span>September 2026</span>
+            </div>
+            <h1 class="hero-title">Jev vs. Machine Learning</h1>
+            <p class="hero-lead">
+              An empirical benchmark comparing Jev with conventional machine-learning pipelines across text and tabular classification tasks.
+            </p>
+            <div class="hero-meta-strip font-mono">
+              <span>Balanced Accuracy</span>
+              <span>·</span>
+              <span>3 Training Seeds (2027, 2028, 2029)</span>
+              <span>·</span>
+              <span>Fixed Test Holdout (Seed 20260920)</span>
+            </div>
+            <div class="hero-actions">
+              <a href="#results" class="btn btn-primary">Explore data ↓</a>
+              <a href="#methodology" class="btn btn-outline">Read methodology</a>
+              <a href="https://github.com/mugenkyou/JEV-VS-ML" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            </div>
+          </div>
+
+          <!-- Hero Benchmark Topology Map (WOW #1) -->
+          <div class="hero-map-card">
+            <div class="hero-map-head font-mono">
+              <span>Benchmark Map</span>
+              <span>8 Datasets · 2 Domains</span>
+            </div>
+            <div class="map-svg-wrap">
+              <svg class="map-svg" viewBox="0 0 360 210" width="100%" height="210" aria-label="Benchmark Map Topology">
+                <!-- Connective Links -->
+                <path d="M 180 30 L 70 80 M 180 30 L 140 90 M 180 30 L 220 90 M 180 30 L 290 80" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <path d="M 70 80 L 50 160 M 70 80 L 110 160 M 140 90 L 110 160 M 140 90 L 150 160" stroke="var(--border)" stroke-width="1.2"/>
+                <path d="M 220 90 L 210 160 M 220 90 L 250 160 M 290 80 L 250 160 M 290 80 L 310 160" stroke="var(--border)" stroke-width="1.2"/>
+                
+                <!-- Center Jev Node -->
+                <circle cx="180" cy="30" r="16" fill="var(--bar-jev)" stroke="var(--card)" stroke-width="3"/>
+                <text x="180" y="34" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff" font-family="ui-monospace, monospace">JEV</text>
+
+                <!-- Domain Clusters -->
+                <!-- TEXT CLUSTER -->
+                <g class="map-node" onclick="window.openDrawer('IMDb')">
+                  <circle cx="50" cy="160" r="12" fill="var(--secondary)" stroke="var(--bar-jev)" stroke-width="2"/>
+                  <text x="50" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">IMDb</text>
+                  <text x="50" y="184" text-anchor="middle" font-size="8" font-weight="700" fill="var(--accent)" font-family="ui-monospace, monospace">96.3%</text>
+                </g>
+
+                <g class="map-node" onclick="window.openDrawer('SMS Spam')">
+                  <circle cx="110" cy="160" r="12" fill="var(--secondary)" stroke="var(--bar-jev)" stroke-width="2"/>
+                  <text x="110" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">SMS</text>
+                  <text x="110" y="184" text-anchor="middle" font-size="8" font-weight="700" fill="var(--accent)" font-family="ui-monospace, monospace">96.1%</text>
+                </g>
+
+                <g class="map-node" onclick="window.openDrawer('AG News')">
+                  <circle cx="150" cy="160" r="12" fill="var(--secondary)" stroke="var(--border)" stroke-width="2"/>
+                  <text x="150" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">News</text>
+                  <text x="150" y="184" text-anchor="middle" font-size="8" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">87.5%</text>
+                </g>
+
+                <!-- TABULAR CLUSTER -->
+                <g class="map-node" onclick="window.openDrawer('Bank Marketing')">
+                  <circle cx="210" cy="160" r="12" fill="var(--secondary)" stroke="var(--border)" stroke-width="2"/>
+                  <text x="210" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">Bank</text>
+                  <text x="210" y="184" text-anchor="middle" font-size="8" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">59.7%</text>
+                </g>
+
+                <g class="map-node" onclick="window.openDrawer('Online Shoppers')">
+                  <circle cx="250" cy="160" r="12" fill="var(--secondary)" stroke="var(--border)" stroke-width="2"/>
+                  <text x="250" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">Shop</text>
+                  <text x="250" y="184" text-anchor="middle" font-size="8" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">51.8%</text>
+                </g>
+
+                <g class="map-node" onclick="window.openDrawer('Breast Cancer')">
+                  <circle cx="310" cy="160" r="12" fill="var(--secondary)" stroke="var(--border)" stroke-width="2"/>
+                  <text x="310" y="163" text-anchor="middle" font-size="8" font-weight="600" fill="var(--foreground)" font-family="ui-monospace, monospace">Diag</text>
+                  <text x="310" y="184" text-anchor="middle" font-size="8" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">88.4%</text>
+                </g>
+
+                <!-- Domain Labels -->
+                <text x="100" y="202" text-anchor="middle" font-size="9" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">← TEXT DOMAIN</text>
+                <text x="260" y="202" text-anchor="middle" font-size="9" font-weight="600" fill="var(--muted-foreground)" font-family="ui-monospace, monospace">TABULAR DOMAIN →</text>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Compact Benchmark Snapshot -->
+    <!-- Compact Snapshot Bar -->
     <div class="container">
-      <div class="snapshot-grid">
+      <div class="snapshot-bar font-mono">
         <div class="snapshot-item">
-          <span class="snapshot-num font-mono">08</span>
-          <span class="snapshot-label">Datasets<br>(4 Text · 4 Tabular)</span>
+          <span class="snapshot-num">08</span>
+          <span class="snapshot-label">Datasets (4 Text · 4 Tabular)</span>
         </div>
         <div class="snapshot-item">
-          <span class="snapshot-num font-mono">11</span>
-          <span class="snapshot-label">Classical Model Families<br>(cuML · CUDA · scikit-learn)</span>
+          <span class="snapshot-num">11</span>
+          <span class="snapshot-label">Classical Model Families</span>
         </div>
         <div class="snapshot-item">
-          <span class="snapshot-num font-mono">03</span>
-          <span class="snapshot-label">Training Seeds<br>(Independent runs per task)</span>
+          <span class="snapshot-num">03</span>
+          <span class="snapshot-label">Training Seeds (2027, 2028, 2029)</span>
         </div>
         <div class="snapshot-item">
-          <span class="snapshot-num font-mono">01</span>
-          <span class="snapshot-label">Fixed Holdout<br>(Frozen test partition)</span>
+          <span class="snapshot-num">01</span>
+          <span class="snapshot-label">Fixed Holdout (Seed 20260920)</span>
         </div>
         <div class="snapshot-item">
-          <span class="snapshot-num font-mono">02</span>
-          <span class="snapshot-label">Evaluation Panels<br>(Raw vs Policy-Adjusted)</span>
+          <span class="snapshot-num">02</span>
+          <span class="snapshot-label">Decision Panels (Raw · Calibrated)</span>
         </div>
       </div>
     </div>
 
-    <!-- Main Results Section -->
+    <!-- Results Section (The Main Event) -->
     <section id="results" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">01 / Empirical Evaluation</div>
-          <h2 class="section-title">Results</h2>
-          <p class="section-desc">
-            Balanced accuracy on the fixed test holdout under Protocol 3.0.1. Values represent mean ± sample standard deviation across three seeds.
-          </p>
+          <div>
+            <div class="section-tag font-mono">01 / Benchmark Results</div>
+            <h2 class="section-title">Where does Jev differ from classical ML?</h2>
+            <p class="section-desc">
+              Balanced accuracy on the fixed test holdout under Protocol 3.0.1. Inspect both raw default rules and calibrated policy thresholds.
+            </p>
+          </div>
         </div>
 
-        <!-- Filter & Decision Controls -->
+        <!-- Sticky Controls Toolbar -->
         <div class="toolbar">
           <div class="toolbar-group">
             <span class="control-label font-mono">Decision Rule</span>
-            <div class="segmented-control">
+            <div class="segmented-control font-mono">
               <label>
                 <input type="radio" name="panel" value="raw" checked>
                 <span>Raw Decisions</span>
               </label>
               <label>
                 <input type="radio" name="panel" value="adjusted">
-                <span>Threshold-Adjusted</span>
+                <span>Policy-Adjusted</span>
               </label>
             </div>
           </div>
 
           <div class="toolbar-group">
-            <span class="control-label font-mono">Filter</span>
-            <div class="segmented-control">
+            <span class="control-label font-mono">Domain</span>
+            <div class="segmented-control font-mono">
               <label>
                 <input type="radio" name="domain-filter" value="all" checked>
                 <span>All (8)</span>
@@ -149,275 +214,294 @@
           </div>
 
           <div class="toolbar-group">
-            <span class="control-label font-mono">View</span>
-            <div class="segmented-control">
-              <label>
-                <input type="radio" name="view-mode" value="summary" checked>
-                <span>Summary</span>
-              </label>
-              <label>
-                <input type="radio" name="view-mode" value="matrix">
-                <span>Full Matrix (14 Models)</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="toolbar-group">
-            <a id="csv-download" href="data/raw_balanced_accuracy.csv" class="btn btn-outline" download>
+            <a id="csv-download" href="data/raw_balanced_accuracy.csv" class="btn btn-outline font-mono" download>
               Download CSV ↓
             </a>
           </div>
         </div>
 
-        <!-- Context Explanation Note -->
-        <div class="context-box">
-          <span class="context-icon" aria-hidden="true">ℹ</span>
-          <span id="panel-note" aria-live="polite">
-            Raw: Default model decision rules without post-hoc threshold adjustment. Jev zero-shot operates strictly without labeled examples or policy threshold fitting.
-          </span>
+        <!-- Interactive Visuals Grid (Dumbbell + Diverging Difference) (WOW #2) -->
+        <div id="visuals" class="visuals-grid">
+          <!-- Dumbbell Comparison Chart -->
+          <div class="vis-card">
+            <div class="vis-head">
+              <div>
+                <h3 class="vis-title">Performance Range Comparison</h3>
+                <span class="font-mono text-muted" style="font-size: 0.6875rem;">Balanced Accuracy (%) · Click any row to inspect</span>
+              </div>
+              <div class="vis-legend font-mono">
+                <span class="vis-legend-item"><span class="vis-swatch jev"></span> Jev Zero-Shot</span>
+                <span class="vis-legend-item"><span class="vis-swatch classic"></span> Best Classical ML</span>
+              </div>
+            </div>
+            <div id="dumbbell-chart-wrap">
+              __DUMBBELL_SVG__
+            </div>
+          </div>
+
+          <!-- Diverging Difference Chart -->
+          <div class="vis-card">
+            <div class="vis-head">
+              <div>
+                <h3 class="vis-title">Per-Dataset Difference (Δ)</h3>
+                <span class="font-mono text-muted" style="font-size: 0.6875rem;">Signed difference vs best classical pipeline (pp)</span>
+              </div>
+              <div class="vis-legend font-mono">
+                <span class="vis-legend-item">← Classical Lead</span>
+                <span class="vis-legend-item">Jev Lead →</span>
+              </div>
+            </div>
+            <div id="diverging-chart-wrap">
+              __DIVERGING_SVG__
+            </div>
+          </div>
         </div>
 
-        <!-- Summary Comparison Table -->
-        <div id="summary-table-wrapper" class="table-container">
+        <!-- Swiss Editorial Small-Multiples Grid -->
+        <div class="section-tag font-mono" style="margin-bottom: 0.75rem;">Dataset Performance Cards · 0–100% Scale</div>
+        <div id="swiss-dataset-grid" class="swiss-grid">
+          __DATASET_GRID__
+        </div>
+
+        <!-- Summary Results Table -->
+        <div class="section-tag font-mono" style="margin-bottom: 0.75rem;">Exact Results Table · Sortable Columns</div>
+        <div class="table-container">
           <table id="summary-table">
             __SUMMARY_TABLE__
           </table>
         </div>
-
-        <!-- Full 14-Model Matrix Table (Initially hidden) -->
-        <div id="full-table-wrapper" class="table-container hidden">
-          <table id="full-table">
-            __FULL_TABLE__
-          </table>
-        </div>
-
-        <!-- Analytical Comparison Chart -->
-        <div class="chart-card">
-          <div class="chart-header">
-            <div class="chart-legend">
-              <span class="legend-item"><span class="legend-swatch zero"></span> Jev zero-shot</span>
-              <span class="legend-item"><span class="legend-swatch few"></span> Jev few-shot</span>
-              <span class="legend-item"><span class="legend-swatch classic"></span> Best classical pipeline</span>
-            </div>
-            <span class="font-mono">Metric: Balanced Accuracy (%) · Common 0–100 Scale</span>
-          </div>
-          <div id="comparison-chart">
-            __CHART__
-          </div>
-          <div class="takeaway-card">
-            <div class="takeaway-heading font-mono">Descriptive Summary</div>
-            <p id="result-takeaway" aria-live="polite">
-              Raw zero-shot Jev leads the best classical pipeline mean on IMDb and SMS Spam. The largest advantage is IMDb: +7.9 percentage points. Across tabular datasets, classical tree and kernel models maintain an empirical lead.
-            </p>
-          </div>
-        </div>
       </div>
     </section>
 
-    <!-- Editorial Analysis Section -->
+    <!-- Key Analysis Findings -->
     <section id="analysis" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">02 / Analysis</div>
-          <h2 class="section-title">Key Benchmark Findings</h2>
-          <p class="section-desc">
-            A nuanced breakdown of performance across domain types, decision rules, and few-shot conditioning.
-          </p>
+          <div>
+            <div class="section-tag font-mono">02 / Analysis</div>
+            <h2 class="section-title">Key Empirical Observations</h2>
+            <p class="section-desc">
+              Data-grounded findings across domain types, policy thresholds, and conditioning strategies.
+            </p>
+          </div>
         </div>
 
-        <div class="editorial-grid">
-          <div class="editorial-card">
-            <div class="editorial-tag font-mono">Finding 01 · Text Sentiment</div>
-            <h3 class="editorial-title">Sentiment polarity is the strongest differentiator.</h3>
-            <p>
-              On IMDb, zero-shot Jev reaches <strong>96.3%</strong> balanced accuracy, compared with <strong>88.4%</strong> for TF-IDF Logistic Regression. The +7.9-point advantage persists after policy calibration (96.1% vs. 88.3%). This reflects strong natural language understanding on long-form sentiment review tasks.
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <div style="padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);">
+            <span class="font-mono" style="font-size: 0.6875rem; color: var(--muted-foreground); text-transform: uppercase;">01 · Text Polarity</span>
+            <h3 style="font-size: 0.9375rem; font-weight: 600; margin: 0.375rem 0 0.5rem;">IMDb Sentiment Standout</h3>
+            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin: 0; line-height: 1.6;">
+              On IMDb, zero-shot Jev reaches <strong>96.3%</strong> balanced accuracy vs. <strong>88.4%</strong> for TF-IDF Logistic Regression (+7.9 pp lead). The advantage persists under policy calibration (96.1% vs 88.3%).
             </p>
           </div>
 
-          <div class="editorial-card">
-            <div class="editorial-tag font-mono">Finding 02 · Threshold Calibration</div>
-            <h3 class="editorial-title">Policy threshold tuning alters the SMS Spam outcome.</h3>
-            <p>
-              Under raw decision rules, zero-shot Jev leads Naive Bayes (<strong>96.1% vs. 95.0%</strong>). However, once decision thresholds are calibrated on the policy split, Naive Bayes reaches <strong>96.3%</strong> against Jev’s <strong>95.9%</strong>. Threshold selection is critical on imbalanced binary tasks.
+          <div style="padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);">
+            <span class="font-mono" style="font-size: 0.6875rem; color: var(--muted-foreground); text-transform: uppercase;">02 · Threshold Shift</span>
+            <h3 style="font-size: 0.9375rem; font-weight: 600; margin: 0.375rem 0 0.5rem;">Thresholding Changes SMS Spam</h3>
+            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin: 0; line-height: 1.6;">
+              Under raw decisions, Jev leads Naive Bayes (<strong>96.1% vs 95.0%</strong>). Following policy threshold optimization, Naive Bayes reaches <strong>96.3%</strong> against Jev's <strong>95.9%</strong>.
             </p>
           </div>
 
-          <div class="editorial-card">
-            <div class="editorial-tag font-mono">Finding 03 · Tabular Complexity</div>
-            <h3 class="editorial-title">Structured tabular business tasks favor classical pipelines.</h3>
-            <p>
-              On Bank Marketing, adjusted zero-shot Jev scores <strong>59.7%</strong> vs. <strong>73.3%</strong> for the voting ensemble. On Online Shoppers, few-shot Jev reaches <strong>53.6%</strong> vs. <strong>71.2%</strong>. Standard feature transformers and tree ensembles remain substantially more effective on numerical business attributes.
+          <div style="padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);">
+            <span class="font-mono" style="font-size: 0.6875rem; color: var(--muted-foreground); text-transform: uppercase;">03 · Tabular Ensembles</span>
+            <h3 style="font-size: 0.9375rem; font-weight: 600; margin: 0.375rem 0 0.5rem;">Tabular Business Tasks</h3>
+            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin: 0; line-height: 1.6;">
+              On Bank Marketing, adjusted zero-shot Jev reaches <strong>59.7%</strong> vs. <strong>73.3%</strong> for the voting ensemble. On Online Shoppers, Jev scores <strong>51.8%</strong> vs. <strong>71.2%</strong>.
             </p>
           </div>
 
-          <div class="editorial-card">
-            <div class="editorial-tag font-mono">Finding 04 · Few-Shot Conditioning</div>
-            <h3 class="editorial-title">In-context training examples help selectively.</h3>
-            <p>
-              Providing one example per class lifts raw Breast Cancer from <strong>61.0% to 88.8%</strong> and Banking77 from <strong>78.9% to 81.9%</strong>. Conversely, few-shot conditioning slightly reduces mean scores on AG News and IMDb. Task structure determines few-shot efficacy.
+          <div style="padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);">
+            <span class="font-mono" style="font-size: 0.6875rem; color: var(--muted-foreground); text-transform: uppercase;">04 · Few-Shot Scope</span>
+            <h3 style="font-size: 0.9375rem; font-weight: 600; margin: 0.375rem 0 0.5rem;">Selective Few-Shot Efficacy</h3>
+            <p style="font-size: 0.8125rem; color: var(--muted-foreground); margin: 0; line-height: 1.6;">
+              One example per class lifts raw Breast Cancer from <strong>61.0% to 88.8%</strong> and Banking77 from <strong>78.9% to 81.9%</strong>, while slightly reducing means on AG News and IMDb.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Methodology Section -->
+    <!-- Interactive Methodology Pipeline (WOW #4) -->
     <section id="methodology" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">03 / Experimental Protocol</div>
-          <h2 class="section-title">Methodology & Pipeline Design</h2>
-          <p class="section-desc">
-            Protocol 3.0.1 strictly isolates candidate selection, policy threshold calibration, and test evaluation.
-          </p>
+          <div>
+            <div class="section-tag font-mono">03 / Experimental Protocol</div>
+            <h2 class="section-title">Interactive Methodology Pipeline</h2>
+            <p class="section-desc">
+              Protocol 3.0.1 strictly isolates candidate selection, decision-threshold calibration, and final holdout evaluation. Click any stage to inspect.
+            </p>
+          </div>
         </div>
 
-        <div class="pipeline-steps">
-          <div class="pipeline-step">
-            <span class="step-num font-mono">01 · Holdout Split</span>
-            <h3 class="step-title">Fixed Test Holdout</h3>
-            <p class="step-desc">
-              Dedicated test set created before any model exploration (Seed 20260920). Remains completely isolated from feature fitting and tuning.
-            </p>
-          </div>
-          <div class="pipeline-step">
-            <span class="step-num font-mono">02 · Train / Val / Policy</span>
-            <h3 class="step-title">Partition Budgets</h3>
-            <p class="step-desc">
-              Up to 8,000 training rows, 1,000 validation rows for hyperparameter selection, and 500 labeled policy rows for threshold calibration.
-            </p>
-          </div>
-          <div class="pipeline-step">
-            <span class="step-num font-mono">03 · Feature Pipelines</span>
-            <h3 class="step-title">Transform-Only Flow</h3>
-            <p class="step-desc">
-              TF-IDF vocabulary and standard scalers are fitted strictly on the training partition and applied statelessly to subsequent splits.
-            </p>
-          </div>
-          <div class="pipeline-step">
-            <span class="step-num font-mono">04 · GPU Subprocess</span>
-            <h3 class="step-title">Isolated Execution</h3>
-            <p class="step-desc">
-              Subprocess GPU execution with explicit CUDA device masking, preflight compatibility verification, and isolated memory cleanup.
-            </p>
+        <!-- Stepper Badges -->
+        <div class="pipeline-stepper font-mono">
+          <button class="pipeline-step-btn active" data-step="01-split">
+            <span class="step-btn-num">Stage 01</span>
+            <span class="step-btn-title">Holdout Split</span>
+          </button>
+          <button class="pipeline-step-btn" data-step="02-features">
+            <span class="step-btn-num">Stage 02</span>
+            <span class="step-btn-title">Feature Flow</span>
+          </button>
+          <button class="pipeline-step-btn" data-step="03-gpu">
+            <span class="step-btn-num">Stage 03</span>
+            <span class="step-btn-title">GPU Isolation</span>
+          </button>
+          <button class="pipeline-step-btn" data-step="04-calibration">
+            <span class="step-btn-num">Stage 04</span>
+            <span class="step-btn-title">Calibration</span>
+          </button>
+        </div>
+
+        <!-- Interactive Pane -->
+        <div class="pipeline-pane">
+          <h3 id="pipeline-pane-title" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.375rem;">01 · Data Split & Holdout Isolation</h3>
+          <p id="pipeline-pane-desc" style="font-size: 0.8125rem; color: var(--muted-foreground); max-width: 48rem;">
+            A dedicated test holdout is isolated before any model exploration (Seed 20260920). It remains completely untouched during feature extraction, hyperparameter tuning, and threshold selection.
+          </p>
+          <div id="pipeline-flow-boxes" class="pipeline-flow-diagram font-mono">
+            <div class="flow-box">
+              <span style="font-size: 0.625rem; color: var(--muted-foreground); text-transform: uppercase;">Train Partition</span>
+              <strong style="display: block; font-size: 0.875rem; margin: 0.25rem 0;">Up to 8,000 rows</strong>
+              <span style="font-size: 0.6875rem; color: var(--muted-foreground);">Model parameter learning</span>
+            </div>
+            <div class="flow-box">
+              <span style="font-size: 0.625rem; color: var(--muted-foreground); text-transform: uppercase;">Validation Split</span>
+              <strong style="display: block; font-size: 0.875rem; margin: 0.25rem 0;">Up to 1,000 rows</strong>
+              <span style="font-size: 0.6875rem; color: var(--muted-foreground);">Hyperparameter candidate tuning</span>
+            </div>
+            <div class="flow-box">
+              <span style="font-size: 0.625rem; color: var(--muted-foreground); text-transform: uppercase;">Policy Split</span>
+              <strong style="display: block; font-size: 0.875rem; margin: 0.25rem 0;">Up to 500 rows</strong>
+              <span style="font-size: 0.6875rem; color: var(--muted-foreground);">Threshold search & calibration</span>
+            </div>
+            <div class="flow-box">
+              <span style="font-size: 0.625rem; color: var(--muted-foreground); text-transform: uppercase;">Test Holdout</span>
+              <strong style="display: block; font-size: 0.875rem; margin: 0.25rem 0;">Shared & Frozen</strong>
+              <span style="font-size: 0.6875rem; color: var(--muted-foreground);">Final evaluation across 3 seeds</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Model Matrix Section -->
+    <!-- Model Landscape Matrix -->
     <section id="models" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">04 / Model Suite</div>
-          <h2 class="section-title">Evaluated Model Architectures</h2>
-          <p class="section-desc">
-            11 classical model families, 2 Jev prompt formulations, and a majority-class reference baseline.
-          </p>
+          <div>
+            <div class="section-tag font-mono">04 / Model Suite</div>
+            <h2 class="section-title">Model Architecture Matrix</h2>
+            <p class="section-desc">
+              11 classical model families, 2 Jev prompt formulations, and a majority-class reference baseline.
+            </p>
+          </div>
         </div>
 
         <div class="table-container">
-          <table class="matrix-table">
+          <table>
             <thead>
               <tr>
                 <th>Model Family</th>
                 <th>Feature Representation</th>
                 <th>Backend Runtime</th>
-                <th class="text-right">Tuning Candidates</th>
-                <th>Description</th>
+                <th class="text-center font-mono">GPU Support</th>
+                <th class="text-right font-mono">Tuning Budget</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="font-mono" style="font-size: 0.75rem;">
               <tr>
-                <td class="font-medium">Jev Zero-Shot</td>
+                <td class="font-medium text-foreground">Jev Zero-Shot</td>
                 <td>Structured text / feature prompts</td>
                 <td>Jev API (<code>jev-1.13.0</code>)</td>
-                <td class="text-right font-mono">1</td>
-                <td>Zero task examples; class descriptions and task schema provided in prompt.</td>
+                <td class="text-center text-accent">● (Cloud)</td>
+                <td class="text-right">1 config</td>
               </tr>
               <tr>
-                <td class="font-medium">Jev Few-Shot</td>
-                <td>In-context labeled examples</td>
+                <td class="font-medium text-foreground">Jev Few-Shot</td>
+                <td>In-context 1-example per class</td>
                 <td>Jev API (<code>jev-1.13.0</code>)</td>
-                <td class="text-right font-mono">1</td>
-                <td>One representative training example per class prepended to prompt.</td>
+                <td class="text-center text-accent">● (Cloud)</td>
+                <td class="text-right">1 config</td>
               </tr>
               <tr>
-                <td class="font-medium">Logistic Regression</td>
-                <td>TF-IDF / Standard Scaler</td>
+                <td class="font-medium text-foreground">Logistic Regression</td>
+                <td>TF-IDF / StandardScaler</td>
                 <td>cuML / scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>L2-regularized linear classifier with varying regularization strengths.</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">Linear / RBF SVM</td>
+                <td class="font-medium text-foreground">Linear / RBF SVM</td>
                 <td>TF-IDF / Dense Scaled</td>
                 <td>cuML / scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Support vector machine with linear and RBF kernels.</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">Random Forest</td>
+                <td class="font-medium text-foreground">Random Forest</td>
                 <td>Dense / Sparse Scaled</td>
                 <td>cuML / scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Ensemble of randomized decision trees (capped at 150 estimators for speed).</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates (max 150 trees)</td>
               </tr>
               <tr>
-                <td class="font-medium">Extra Trees</td>
+                <td class="font-medium text-foreground">Extra Trees</td>
                 <td>Dense / Sparse Scaled</td>
                 <td>scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Extremely randomized trees with random split thresholds.</td>
+                <td class="text-center text-muted">—</td>
+                <td class="text-right">4 candidates (max 150 trees)</td>
               </tr>
               <tr>
-                <td class="font-medium">k-Nearest Neighbors</td>
-                <td>TruncatedSVD / Dense</td>
+                <td class="font-medium text-foreground">k-Nearest Neighbors</td>
+                <td>TruncatedSVD (300d) / Dense</td>
                 <td>cuML / scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Distance-weighted nearest neighbors with dimensionality reduction.</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">Naive Bayes</td>
+                <td class="font-medium text-foreground">Naive Bayes</td>
                 <td>Count / TF-IDF / Gaussian</td>
                 <td>scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Multinomial and Gaussian Naive Bayes with Laplace smoothing.</td>
+                <td class="text-center text-muted">—</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">Hist Gradient Boosting</td>
+                <td class="font-medium text-foreground">Hist Gradient Boosting</td>
                 <td>Binned Numerical / Dense</td>
                 <td>scikit-learn</td>
-                <td class="text-right font-mono">4</td>
-                <td>Histogram-based gradient boosting (capped at 60 iterations).</td>
+                <td class="text-center text-muted">—</td>
+                <td class="text-right">4 candidates (max 60 iters)</td>
               </tr>
               <tr>
-                <td class="font-medium">XGBoost</td>
+                <td class="font-medium text-foreground">XGBoost</td>
                 <td>Tree Features / DMatrix</td>
                 <td>CUDA / CPU</td>
-                <td class="text-right font-mono">4</td>
-                <td>Gradient boosted decision trees with tree_method='hist'.</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">CatBoost</td>
-                <td>Categorical & Numerical</td>
+                <td class="font-medium text-foreground">CatBoost</td>
+                <td>Native Categorical & Numerical</td>
                 <td>CUDA / CPU</td>
-                <td class="text-right font-mono">4</td>
-                <td>Symmetric decision trees with native categorical handling.</td>
+                <td class="text-center text-accent">●</td>
+                <td class="text-right">4 candidates</td>
               </tr>
               <tr>
-                <td class="font-medium">Voting Ensemble</td>
-                <td>Probability aggregation</td>
+                <td class="font-medium text-foreground">Voting Ensemble</td>
+                <td>Probability Aggregation</td>
                 <td>CPU / Mixed</td>
-                <td class="text-right font-mono">Composite</td>
-                <td>Soft-voting ensemble of top-performing classical pipelines.</td>
+                <td class="text-center text-muted">—</td>
+                <td class="text-right">Composite soft voting</td>
               </tr>
               <tr>
-                <td class="font-medium">Majority Baseline</td>
+                <td class="font-medium text-foreground">Majority Baseline</td>
                 <td>Constant class assignment</td>
-                <td>Reference baseline</td>
-                <td class="text-right font-mono">1</td>
-                <td>Always predicts most frequent training class.</td>
+                <td>Reference</td>
+                <td class="text-center text-muted">—</td>
+                <td class="text-right">1 config</td>
               </tr>
             </tbody>
           </table>
@@ -425,60 +509,45 @@
       </div>
     </section>
 
-    <!-- Reproducibility Section -->
+    <!-- Reproducibility Terminal -->
     <section id="reproducibility" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">05 / Reproducibility</div>
-          <h2 class="section-title">Reproduce the Benchmark</h2>
-          <p class="section-desc">
-            Complete instructions to verify unit tests offline or execute the full benchmark suite in a CUDA GPU environment.
-          </p>
+          <div>
+            <div class="section-tag font-mono">05 / Reproducibility</div>
+            <h2 class="section-title">Verification & Execution</h2>
+            <p class="section-desc">
+              Execute offline validation tests or reproduce the benchmark in a CUDA GPU environment.
+            </p>
+          </div>
         </div>
 
-        <div class="repro-grid">
-          <div class="repro-card">
-            <div class="repro-header">
-              <span class="repro-title font-mono">Step 01 · Install Dependencies</span>
+        <div class="terminal-shell font-mono">
+          <div class="terminal-topbar">
+            <div class="terminal-dots">
+              <span></span><span></span><span></span>
             </div>
-            <p class="repro-desc">Install the reproducible environment requirements.</p>
-            <div class="code-box font-mono">
-              <code>pip install -r requirements-v2.txt</code>
-              <button class="copy-btn" data-copy="pip install -r requirements-v2.txt">Copy</button>
+            <div class="terminal-tabs">
+              <button class="term-tab-btn active" data-term="validate">01 · Validate (5s)</button>
+              <button class="term-tab-btn" data-term="setup">02 · Environment</button>
+              <button class="term-tab-btn" data-term="run">03 · GPU Run</button>
+              <button class="term-tab-btn" data-term="export">04 · Artifacts</button>
             </div>
+            <button class="copy-btn" data-copy="python validate_all.py">Copy</button>
           </div>
+          <div id="terminal-content" class="terminal-body">
+<span class="term-comment"># Run complete offline validation test suite (zero GPU requirement)</span>
+<span class="term-cmd">$ python validate_all.py</span>
 
-          <div class="repro-card">
-            <div class="repro-header">
-              <span class="repro-title font-mono">Step 02 · Offline Validation Suite</span>
-            </div>
-            <p class="repro-desc">Execute the comprehensive offline validation test suite (zero network & zero GPU requirement).</p>
-            <div class="code-box font-mono">
-              <code>python validate_all.py</code>
-              <button class="copy-btn" data-copy="python validate_all.py">Copy</button>
-            </div>
-          </div>
+<span class="term-pass">✓ validate_benchmark_package.py</span> · Modular benchmark.* package contracts
+<span class="term-pass">✓ validate_v3_artifact.py</span> · Source hashes, complete final panels, CSVs & manifest
+<span class="term-pass">✓ validate_v3_backends.py</span> · Backend estimator routing matrix & constructors
+<span class="term-pass">✓ validate_gpu_process.py</span> · Multi-GPU subprocess device masking & isolation
+<span class="term-pass">✓ validate_sampling.py</span> · Proportional capping & stratified split checks
 
-          <div class="repro-card">
-            <div class="repro-header">
-              <span class="repro-title font-mono">Step 03 · Full GPU Benchmark Execution</span>
-            </div>
-            <p class="repro-desc">Execute the full benchmark runner in a dual T4 / CUDA GPU environment.</p>
-            <div class="code-box font-mono">
-              <code>python kaggle_benchmark.py</code>
-              <button class="copy-btn" data-copy="python kaggle_benchmark.py">Copy</button>
-            </div>
-          </div>
-
-          <div class="repro-card">
-            <div class="repro-header">
-              <span class="repro-title font-mono">Step 04 · Export Published Artifacts & Site</span>
-            </div>
-            <p class="repro-desc">Export final CSV tables, verify provenance hashes, and compile the static report.</p>
-            <div class="code-box font-mono">
-              <code>python export_published_results.py &amp;&amp; python build_site.py</code>
-              <button class="copy-btn" data-copy="python export_published_results.py &amp;&amp; python build_site.py">Copy</button>
-            </div>
+<span class="term-pass font-semibold">========================================================
+Summary: 5/5 checks passed in 15.47s
+All offline checks PASSED. Ready for evaluation.</span>
           </div>
         </div>
       </div>
@@ -488,68 +557,67 @@
     <section id="limitations" class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">06 / Scope & Limitations</div>
-          <h2 class="section-title">Limitations & Analytical Boundaries</h2>
-          <p class="section-desc">
-            Explicit documentation of boundary conditions, statistical assumptions, and non-claims.
-          </p>
+          <div>
+            <div class="section-tag font-mono">06 / Scope & Limitations</div>
+            <h2 class="section-title">Analytical Boundaries</h2>
+            <p class="section-desc">
+              Explicit documentation of boundary conditions, statistical assumptions, and non-claims.
+            </p>
+          </div>
         </div>
 
         <div class="limits-grid">
           <div class="limit-card">
             <h3 class="limit-title font-mono">Statistical Inference</h3>
             <p>
-              Reported ± values represent sample standard deviations across 3 random training seeds on the same test set. They do not constitute formal confidence intervals or hypothesis tests.
+              Reported ± values represent sample standard deviations across 3 random training seeds on the same test set. They do not constitute formal confidence intervals.
             </p>
           </div>
-
           <div class="limit-card">
             <h3 class="limit-title font-mono">Cached Zero-Shot Calls</h3>
             <p>
-              Identical successful API requests are cached and reused across seeds. Zero variance on zero-shot Jev rows reflects deterministic prompt caching rather than independent API replications.
+              Identical successful API requests are cached and reused across seeds. Zero variance reflects deterministic prompt caching rather than independent API replications.
             </p>
           </div>
-
           <div class="limit-card">
             <h3 class="limit-title font-mono">Banking77 API Failures</h3>
             <p>
-              Requests yielding unparseable or out-of-vocabulary label predictions were assigned failure code -1 and counted as incorrect. Scores include API formatting compliance factors.
+              Requests yielding unparseable or out-of-vocabulary label predictions were assigned failure code -1 and counted as incorrect.
             </p>
           </div>
-
           <div class="limit-card">
             <h3 class="limit-title font-mono">Sample Size Constraints</h3>
             <p>
-              Iris (n=30) and Breast Cancer (n=114) feature compact holdout sets. Near-perfect scores on these small samples should not be generalized to larger real-world distributions.
+              Iris (n=30) and Breast Cancer (n=114) feature compact holdouts. Near-perfect scores on these samples should not be generalized to larger distributions.
             </p>
           </div>
-
           <div class="limit-card">
             <h3 class="limit-title font-mono">Classical Baseline Scope</h3>
             <p>
-              Classical pipelines operate under a strict computational budget (max 150 trees, 60 hist iterations, 4 tuning candidates). They do not represent fine-tuned deep neural transformers.
+              Classical pipelines operate under a strict computational budget (max 150 trees, 60 hist iters). They do not represent fine-tuned deep transformers.
             </p>
           </div>
-
           <div class="limit-card">
             <h3 class="limit-title font-mono">Latency & Cost Scope</h3>
             <p>
-              The benchmark logged 38,922 request attempts with an estimated ~$4.19 input cost. This is an empirical run estimate and should not be treated as a production SLA or billing quote.
+              The benchmark logged 38,922 request attempts with an estimated ~$4.19 input cost. This is an empirical run estimate, not an SLA or billing quote.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Open Artifacts Section -->
-    <section id="artifacts" class="section">
+    <!-- Open Artifacts Downloads -->
+    <section class="section">
       <div class="container">
         <div class="section-header">
-          <div class="section-tag font-mono">07 / Open Artifacts</div>
-          <h2 class="section-title">Download Data & Notebooks</h2>
-          <p class="section-desc">
-            All data tables, source code, and frozen notebook outputs are open-source and version-controlled.
-          </p>
+          <div>
+            <div class="section-tag font-mono">07 / Open Artifacts</div>
+            <h2 class="section-title">Download Data & Notebooks</h2>
+            <p class="section-desc">
+              All tables, source code, and frozen notebook outputs are open-source.
+            </p>
+          </div>
         </div>
 
         <div class="artifacts-grid">
@@ -558,25 +626,21 @@
             <span class="artifact-name">jev_benchmark_v3.ipynb</span>
             <span class="artifact-sub">Frozen outputs & run traces ↗</span>
           </a>
-
           <a href="data/raw_balanced_accuracy.csv" class="artifact-card" download>
             <span class="artifact-tag font-mono">02 · Raw Results</span>
             <span class="artifact-name">raw_balanced_accuracy.csv</span>
             <span class="artifact-sub">Default decision rule scores ↓</span>
           </a>
-
           <a href="data/adjusted_balanced_accuracy.csv" class="artifact-card" download>
-            <span class="artifact-tag font-mono">03 · Policy Calibrated</span>
+            <span class="artifact-tag font-mono">03 · Calibrated</span>
             <span class="artifact-name">adjusted_balanced_accuracy.csv</span>
             <span class="artifact-sub">Threshold-adjusted scores ↓</span>
           </a>
-
           <a href="https://github.com/mugenkyou/JEV-VS-ML/blob/main/published_results/manifest.json" class="artifact-card" target="_blank" rel="noopener noreferrer">
             <span class="artifact-tag font-mono">04 · Provenance</span>
             <span class="artifact-name">manifest.json</span>
             <span class="artifact-sub">SHA-256 integrity hashes ↗</span>
           </a>
-
           <a href="https://github.com/mugenkyou/JEV-VS-ML/raw/refs/heads/main/jev_benchmark_v3_bundle.zip" class="artifact-card">
             <span class="artifact-tag font-mono">05 · Bundle</span>
             <span class="artifact-name">jev_benchmark_v3_bundle.zip</span>
@@ -587,10 +651,61 @@
     </section>
   </main>
 
+  <!-- DATASET DETAIL DRAWER (WOW #3) -->
+  <div id="drawer-backdrop" class="drawer-backdrop" aria-hidden="true"></div>
+  <aside id="dataset-drawer" class="drawer-panel" aria-label="Dataset Inspector" role="dialog" aria-modal="true">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <h3 id="drawer-title">IMDb</h3>
+        <span id="drawer-meta" class="drawer-subtitle font-mono">Text Classification · 2 Classes · 1,000 Test Rows</span>
+      </div>
+      <button id="drawer-close-btn" class="drawer-close font-mono" aria-label="Close dataset drawer">✕ ESC</button>
+    </div>
+
+    <div class="drawer-body">
+      <p id="drawer-desc" style="font-size: 0.8125rem; color: var(--muted-foreground); margin: 0; line-height: 1.6;">
+        Movie review sentiment polarity classification from long-form user reviews.
+      </p>
+
+      <!-- Comparative Metric Hero -->
+      <div class="drawer-metric-hero font-mono">
+        <div class="drawer-m-card">
+          <span class="drawer-m-label">Jev Zero-Shot</span>
+          <span id="drawer-val-jev-zero" class="drawer-m-val text-accent">96.3%</span>
+        </div>
+        <div class="drawer-m-card">
+          <span id="drawer-lbl-classic" class="drawer-m-label">Best Classical</span>
+          <span id="drawer-val-classic" class="drawer-m-val text-muted">88.4%</span>
+        </div>
+        <div class="drawer-m-card">
+          <span class="drawer-m-label">Difference (Δ)</span>
+          <span id="drawer-val-delta" class="drawer-m-val text-accent">+7.9 pp</span>
+        </div>
+      </div>
+
+      <!-- Variance & Dispersion Plot -->
+      <div class="drawer-variance-box">
+        <div class="drawer-section-title font-mono">Seed Variance & Dispersion (Mean ± 1 SD)</div>
+        <div id="drawer-variance-content"></div>
+      </div>
+
+      <!-- Full 14-Model Score Breakdown -->
+      <div>
+        <div class="drawer-section-title font-mono">Complete 14-Model Score Breakdown</div>
+        <div id="drawer-models-list" class="drawer-models-grid"></div>
+      </div>
+
+      <!-- Provenance Footnote -->
+      <div style="font-size: 0.6875rem; color: var(--muted-foreground); padding-top: 0.5rem; border-top: 1px solid var(--border);" class="font-mono">
+        Training Seeds: <code>2027, 2028, 2029</code> · Holdout Seed: <code>20260920</code> · Protocol 3.0.1
+      </div>
+    </div>
+  </aside>
+
   <!-- Minimal Footer -->
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div class="footer-brand">
+      <div class="footer-brand font-mono">
         <strong>Jev-vs-ML</strong> · Protocol 3.0.1 · MIT License
       </div>
       <div class="footer-links font-mono">

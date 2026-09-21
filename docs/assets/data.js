@@ -23,8 +23,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 4,
         "testRows": 1000,
-        "description": "Topic classification across 4 news categories: World, Sports, Business, and Sci/Tech.",
-        "classesDetail": "4 classes: World (25%), Sports (25%), Business (25%), Sci/Tech (25%)",
+        "description": "Topic classification across 4 balanced news categories: World, Sports, Business, and Sci/Tech.",
+        "classesDetail": "4 classes: World, Sports, Business, Sci/Tech (250 examples each in test holdout)",
         "metrics": "Balanced Accuracy (unweighted average recall across classes)",
         "scores": {
           "Logistic regression": {
@@ -124,8 +124,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 77,
         "testRows": 1500,
-        "description": "Fine-grained customer service intent classification across 77 online banking categories.",
-        "classesDetail": "77 fine-grained intent classes in banking customer support",
+        "description": "Fine-grained customer service intent classification across 77 online banking intent categories.",
+        "classesDetail": "77 fine-grained customer intent classes (majority baseline = 1.3%)",
         "metrics": "Balanced Accuracy (majority baseline = 1.3%)",
         "scores": {
           "Logistic regression": {
@@ -225,8 +225,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 2,
         "testRows": 1000,
-        "description": "Mobile phone SMS spam detection on imbalanced communication messages.",
-        "classesDetail": "2 classes: Ham (legitimate) vs. Spam",
+        "description": "Mobile phone SMS spam detection on imbalanced English mobile communications.",
+        "classesDetail": "2 classes: Ham (legitimate) vs. Spam (imbalanced)",
         "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
@@ -326,8 +326,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 2,
         "testRows": 1000,
-        "description": "Movie review sentiment polarity classification from long-form user reviews.",
-        "classesDetail": "2 classes: Positive vs. Negative",
+        "description": "Binary movie review sentiment polarity classification from long-form user reviews.",
+        "classesDetail": "2 classes: Positive vs. Negative review sentiment",
         "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
@@ -429,7 +429,7 @@ window.BENCHMARK = {
         "testRows": 1000,
         "description": "Direct marketing phone campaign prediction of client term deposit subscriptions.",
         "classesDetail": "2 classes: Subscribed (yes) vs. Not subscribed (no)",
-        "metrics": "Balanced Accuracy with demographic, economic, and contact features",
+        "metrics": "Balanced Accuracy with demographic, economic, and campaign contact features",
         "scores": {
           "Logistic regression": {
             "mean": 58.0,
@@ -529,8 +529,8 @@ window.BENCHMARK = {
         "classes": 2,
         "testRows": 1000,
         "description": "E-commerce session revenue purchasing intention from real-time web browsing analytics.",
-        "classesDetail": "2 classes: Purchase (True) vs. No purchase (False)",
-        "metrics": "Balanced Accuracy across numerical web session attributes",
+        "classesDetail": "2 classes: Purchase revenue generated (True) vs. No purchase (False)",
+        "metrics": "Balanced Accuracy across numerical session attributes and administrative features",
         "scores": {
           "Logistic regression": {
             "mean": 63.8,
@@ -630,8 +630,8 @@ window.BENCHMARK = {
         "classes": 2,
         "testRows": 114,
         "description": "Wisconsin diagnostic clinical features for malignant versus benign tumor classification.",
-        "classesDetail": "2 classes: Malignant vs. Benign (small holdout n=114)",
-        "metrics": "Balanced Accuracy across 30 nuclear feature dimensions",
+        "classesDetail": "2 classes: Malignant vs. Benign (compact holdout n=114)",
+        "metrics": "Balanced Accuracy across 30 continuous nuclear feature dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 99.5,
@@ -731,9 +731,9 @@ window.BENCHMARK = {
         "domain": "Tabular",
         "classes": 3,
         "testRows": 30,
-        "description": "Morphometric iris flower species classification from sepal/petal measurements.",
-        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (n=30 holdout)",
-        "metrics": "Balanced Accuracy across 4 morphometric measurements",
+        "description": "Morphometric iris flower species classification from sepal and petal measurements.",
+        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (compact holdout n=30)",
+        "metrics": "Balanced Accuracy across 4 morphometric dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,
@@ -857,8 +857,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 4,
         "testRows": 1000,
-        "description": "Topic classification across 4 news categories: World, Sports, Business, and Sci/Tech.",
-        "classesDetail": "4 classes: World (25%), Sports (25%), Business (25%), Sci/Tech (25%)",
+        "description": "Topic classification across 4 balanced news categories: World, Sports, Business, and Sci/Tech.",
+        "classesDetail": "4 classes: World, Sports, Business, Sci/Tech (250 examples each in test holdout)",
         "metrics": "Balanced Accuracy (unweighted average recall across classes)",
         "scores": {
           "Logistic regression": {
@@ -958,8 +958,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 77,
         "testRows": 1500,
-        "description": "Fine-grained customer service intent classification across 77 online banking categories.",
-        "classesDetail": "77 fine-grained intent classes in banking customer support",
+        "description": "Fine-grained customer service intent classification across 77 online banking intent categories.",
+        "classesDetail": "77 fine-grained customer intent classes (majority baseline = 1.3%)",
         "metrics": "Balanced Accuracy (majority baseline = 1.3%)",
         "scores": {
           "Logistic regression": {
@@ -1059,8 +1059,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 2,
         "testRows": 1000,
-        "description": "Mobile phone SMS spam detection on imbalanced communication messages.",
-        "classesDetail": "2 classes: Ham (legitimate) vs. Spam",
+        "description": "Mobile phone SMS spam detection on imbalanced English mobile communications.",
+        "classesDetail": "2 classes: Ham (legitimate) vs. Spam (imbalanced)",
         "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
@@ -1160,8 +1160,8 @@ window.BENCHMARK = {
         "domain": "Text",
         "classes": 2,
         "testRows": 1000,
-        "description": "Movie review sentiment polarity classification from long-form user reviews.",
-        "classesDetail": "2 classes: Positive vs. Negative",
+        "description": "Binary movie review sentiment polarity classification from long-form user reviews.",
+        "classesDetail": "2 classes: Positive vs. Negative review sentiment",
         "metrics": "Balanced Accuracy (majority baseline = 50.0%)",
         "scores": {
           "Logistic regression": {
@@ -1263,7 +1263,7 @@ window.BENCHMARK = {
         "testRows": 1000,
         "description": "Direct marketing phone campaign prediction of client term deposit subscriptions.",
         "classesDetail": "2 classes: Subscribed (yes) vs. Not subscribed (no)",
-        "metrics": "Balanced Accuracy with demographic, economic, and contact features",
+        "metrics": "Balanced Accuracy with demographic, economic, and campaign contact features",
         "scores": {
           "Logistic regression": {
             "mean": 68.9,
@@ -1363,8 +1363,8 @@ window.BENCHMARK = {
         "classes": 2,
         "testRows": 1000,
         "description": "E-commerce session revenue purchasing intention from real-time web browsing analytics.",
-        "classesDetail": "2 classes: Purchase (True) vs. No purchase (False)",
-        "metrics": "Balanced Accuracy across numerical web session attributes",
+        "classesDetail": "2 classes: Purchase revenue generated (True) vs. No purchase (False)",
+        "metrics": "Balanced Accuracy across numerical session attributes and administrative features",
         "scores": {
           "Logistic regression": {
             "mean": 69.3,
@@ -1464,8 +1464,8 @@ window.BENCHMARK = {
         "classes": 2,
         "testRows": 114,
         "description": "Wisconsin diagnostic clinical features for malignant versus benign tumor classification.",
-        "classesDetail": "2 classes: Malignant vs. Benign (small holdout n=114)",
-        "metrics": "Balanced Accuracy across 30 nuclear feature dimensions",
+        "classesDetail": "2 classes: Malignant vs. Benign (compact holdout n=114)",
+        "metrics": "Balanced Accuracy across 30 continuous nuclear feature dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,
@@ -1564,9 +1564,9 @@ window.BENCHMARK = {
         "domain": "Tabular",
         "classes": 3,
         "testRows": 30,
-        "description": "Morphometric iris flower species classification from sepal/petal measurements.",
-        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (n=30 holdout)",
-        "metrics": "Balanced Accuracy across 4 morphometric measurements",
+        "description": "Morphometric iris flower species classification from sepal and petal measurements.",
+        "classesDetail": "3 classes: Setosa, Versicolor, Virginica (compact holdout n=30)",
+        "metrics": "Balanced Accuracy across 4 morphometric dimensions",
         "scores": {
           "Logistic regression": {
             "mean": 100.0,

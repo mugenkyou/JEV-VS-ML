@@ -1,4 +1,4 @@
-"""Build the dependency-free Pages report from the published score tables."""
+"""Build the dependency-free research benchmark website from published score tables."""
 import csv
 import html
 import hashlib
@@ -16,8 +16,8 @@ DATASET_METADATA = {
         'domain': 'Text',
         'classes': 4,
         'testRows': 1000,
-        'description': 'Topic classification across 4 news categories: World, Sports, Business, and Sci/Tech.',
-        'classesDetail': '4 classes: World (25%), Sports (25%), Business (25%), Sci/Tech (25%)',
+        'description': 'Topic classification across 4 balanced news categories: World, Sports, Business, and Sci/Tech.',
+        'classesDetail': '4 classes: World, Sports, Business, Sci/Tech (250 examples each in test holdout)',
         'metrics': 'Balanced Accuracy (unweighted average recall across classes)',
     },
     'Banking77': {
@@ -25,8 +25,8 @@ DATASET_METADATA = {
         'domain': 'Text',
         'classes': 77,
         'testRows': 1500,
-        'description': 'Fine-grained customer service intent classification across 77 online banking categories.',
-        'classesDetail': '77 fine-grained intent classes in banking customer support',
+        'description': 'Fine-grained customer service intent classification across 77 online banking intent categories.',
+        'classesDetail': '77 fine-grained customer intent classes (majority baseline = 1.3%)',
         'metrics': 'Balanced Accuracy (majority baseline = 1.3%)',
     },
     'SMS Spam': {
@@ -34,8 +34,8 @@ DATASET_METADATA = {
         'domain': 'Text',
         'classes': 2,
         'testRows': 1000,
-        'description': 'Mobile phone SMS spam detection on imbalanced communication messages.',
-        'classesDetail': '2 classes: Ham (legitimate) vs. Spam',
+        'description': 'Mobile phone SMS spam detection on imbalanced English mobile communications.',
+        'classesDetail': '2 classes: Ham (legitimate) vs. Spam (imbalanced)',
         'metrics': 'Balanced Accuracy (majority baseline = 50.0%)',
     },
     'IMDb': {
@@ -43,8 +43,8 @@ DATASET_METADATA = {
         'domain': 'Text',
         'classes': 2,
         'testRows': 1000,
-        'description': 'Movie review sentiment polarity classification from long-form user reviews.',
-        'classesDetail': '2 classes: Positive vs. Negative',
+        'description': 'Binary movie review sentiment polarity classification from long-form user reviews.',
+        'classesDetail': '2 classes: Positive vs. Negative review sentiment',
         'metrics': 'Balanced Accuracy (majority baseline = 50.0%)',
     },
     'Bank Marketing': {
@@ -54,7 +54,7 @@ DATASET_METADATA = {
         'testRows': 1000,
         'description': 'Direct marketing phone campaign prediction of client term deposit subscriptions.',
         'classesDetail': '2 classes: Subscribed (yes) vs. Not subscribed (no)',
-        'metrics': 'Balanced Accuracy with demographic, economic, and contact features',
+        'metrics': 'Balanced Accuracy with demographic, economic, and campaign contact features',
     },
     'Online Shoppers': {
         'kind': 'tabular',
@@ -62,8 +62,8 @@ DATASET_METADATA = {
         'classes': 2,
         'testRows': 1000,
         'description': 'E-commerce session revenue purchasing intention from real-time web browsing analytics.',
-        'classesDetail': '2 classes: Purchase (True) vs. No purchase (False)',
-        'metrics': 'Balanced Accuracy across numerical web session attributes',
+        'classesDetail': '2 classes: Purchase revenue generated (True) vs. No purchase (False)',
+        'metrics': 'Balanced Accuracy across numerical session attributes and administrative features',
     },
     'Breast Cancer': {
         'kind': 'tabular',
@@ -71,17 +71,17 @@ DATASET_METADATA = {
         'classes': 2,
         'testRows': 114,
         'description': 'Wisconsin diagnostic clinical features for malignant versus benign tumor classification.',
-        'classesDetail': '2 classes: Malignant vs. Benign (small holdout n=114)',
-        'metrics': 'Balanced Accuracy across 30 nuclear feature dimensions',
+        'classesDetail': '2 classes: Malignant vs. Benign (compact holdout n=114)',
+        'metrics': 'Balanced Accuracy across 30 continuous nuclear feature dimensions',
     },
     'Iris': {
         'kind': 'tabular',
         'domain': 'Tabular',
         'classes': 3,
         'testRows': 30,
-        'description': 'Morphometric iris flower species classification from sepal/petal measurements.',
-        'classesDetail': '3 classes: Setosa, Versicolor, Virginica (n=30 holdout)',
-        'metrics': 'Balanced Accuracy across 4 morphometric measurements',
+        'description': 'Morphometric iris flower species classification from sepal and petal measurements.',
+        'classesDetail': '3 classes: Setosa, Versicolor, Virginica (compact holdout n=30)',
+        'metrics': 'Balanced Accuracy across 4 morphometric dimensions',
     },
 }
 
@@ -131,19 +131,166 @@ def load_data():
         data[panel] = dict(models=models, rows=rows)
     return data
 
+def build_dumbbell_chart_svg(rows):
+    """Generate static SVG dumbbell comparison chart."""
+    h_row = 44
+    padding_top = 20
+    padding_bottom = 30
+    total_height = padding_top + len(rows) * h_row + padding_bottom
+    
+    lines = [f'<svg class="dumbbell-svg" viewBox="0 0 800 {total_height}" width="100%" height="{total_height}" aria-label="Jev vs Classical Balanced Accuracy Dumbbell Plot">']
+    
+    # Grid lines at 0%, 25%, 50%, 75%, 100%
+    x_offset = 150
+    width_chart = 600
+    for tick in (0, 25, 50, 75, 100):
+        gx = x_offset + (tick / 100.0) * width_chart
+        lines.append(f'<line x1="{gx}" y1="{padding_top}" x2="{gx}" y2="{total_height - padding_bottom}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>')
+        lines.append(f'<text x="{gx}" y="{total_height - 10}" text-anchor="middle" font-size="10" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">{tick}%</text>')
+
+    for i, row in enumerate(rows):
+        y = padding_top + i * h_row + 22
+        jev_score = row['scores']['Jev zero-shot']['mean']
+        classic_score = row['best']
+        
+        x_jev = x_offset + (jev_score / 100.0) * width_chart
+        x_classic = x_offset + (classic_score / 100.0) * width_chart
+        
+        x_min = min(x_jev, x_classic)
+        x_max = max(x_jev, x_classic)
+        
+        # Track line
+        track_color = 'var(--accent)' if jev_score >= classic_score else 'var(--muted-foreground)'
+        lines.append(f'<g class="dumbbell-row" data-dataset="{html.escape(row["dataset"])}" tabindex="0" role="button">')
+        lines.append(f'<text x="140" y="{y + 4}" text-anchor="end" font-size="12" font-weight="600" fill="var(--foreground)">{html.escape(row["dataset"])}</text>')
+        lines.append(f'<line x1="{x_min}" y1="{y}" x2="{x_max}" y2="{y}" stroke="{track_color}" stroke-width="2" stroke-opacity="0.6"/>')
+        
+        # Classical dot
+        lines.append(f'<circle cx="{x_classic}" cy="{y}" r="5.5" fill="var(--bar-classic)" stroke="var(--card)" stroke-width="2"/>')
+        
+        # Jev dot
+        lines.append(f'<circle cx="{x_jev}" cy="{y}" r="6.5" fill="var(--bar-jev)" stroke="var(--card)" stroke-width="2"/>')
+        
+        # Score labels
+        if abs(x_jev - x_classic) > 40:
+            lines.append(f'<text x="{x_classic}" y="{y - 9}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">{classic_score:.1f}%</text>')
+            lines.append(f'<text x="{x_jev}" y="{y - 9}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="700" fill="var(--bar-jev)">{jev_score:.1f}%</text>')
+        else:
+            lines.append(f'<text x="{max(x_jev, x_classic) + 12}" y="{y + 3}" text-anchor="start" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">Jev {jev_score:.1f}% / ML {classic_score:.1f}%</text>')
+            
+        lines.append('</g>')
+        
+    lines.append('</svg>')
+    return ''.join(lines)
+
+def build_diverging_chart_svg(rows):
+    """Generate diverging bar chart showing difference (Δ) vs best classical."""
+    h_row = 38
+    padding_top = 20
+    padding_bottom = 25
+    total_height = padding_top + len(rows) * h_row + padding_bottom
+    
+    lines = [f'<svg class="diverging-svg" viewBox="0 0 800 {total_height}" width="100%" height="{total_height}" aria-label="Diverging Delta Chart">']
+    
+    # Scale from -40% to +15%
+    min_val = -40.0
+    max_val = 15.0
+    range_val = max_val - min_val
+    chart_x = 160
+    chart_w = 580
+    zero_x = chart_x + ((0.0 - min_val) / range_val) * chart_w
+    
+    # Grid ticks at -40, -30, -20, -10, 0, +10
+    for tick in (-40, -30, -20, -10, 0, 10):
+        tx = chart_x + ((tick - min_val) / range_val) * chart_w
+        is_zero = (tick == 0)
+        line_color = 'var(--foreground)' if is_zero else 'var(--border)'
+        line_width = '1.5' if is_zero else '1'
+        dash = '' if is_zero else 'stroke-dasharray="2 2"'
+        lines.append(f'<line x1="{tx}" y1="{padding_top}" x2="{tx}" y2="{total_height - padding_bottom}" stroke="{line_color}" stroke-width="{line_width}" {dash}/>')
+        tick_str = f'+{tick}pp' if tick > 0 else (f'{tick}pp' if tick < 0 else '0.0')
+        lines.append(f'<text x="{tx}" y="{total_height - 8}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">{tick_str}</text>')
+        
+    for i, row in enumerate(rows):
+        y = padding_top + i * h_row + 12
+        d_val = row['delta']
+        bx = chart_x + ((min(0, d_val) - min_val) / range_val) * chart_w
+        bw = (abs(d_val) / range_val) * chart_w
+        fill_color = 'var(--delta-pos-fg)' if d_val > 0 else 'var(--bar-classic)'
+        
+        lines.append(f'<g class="diverging-row" data-dataset="{html.escape(row["dataset"])}">')
+        lines.append(f'<text x="150" y="{y + 11}" text-anchor="end" font-size="11" font-weight="500" fill="var(--foreground)">{html.escape(row["dataset"])}</text>')
+        lines.append(f'<rect x="{bx}" y="{y}" width="{max(2, bw)}" height="14" fill="{fill_color}" rx="2" opacity="0.85"/>')
+        
+        # Label position
+        text_x = zero_x + (bw + 6 if d_val >= 0 else -(bw + 6))
+        anchor = 'start' if d_val >= 0 else 'end'
+        d_str = f'+{d_val:.1f} pp' if d_val > 0 else f'{d_val:.1f} pp'
+        lines.append(f'<text x="{text_x}" y="{y + 11}" text-anchor="{anchor}" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="{fill_color}">{d_str}</text>')
+        lines.append('</g>')
+        
+    lines.append('</svg>')
+    return ''.join(lines)
+
+def build_dataset_grid(rows):
+    """Generate Swiss editorial small-multiples dataset grid."""
+    cards = []
+    for row in rows:
+        d_val = row['delta']
+        d_str = f'+{d_val:.1f}%' if d_val > 0 else f'{d_val:.1f}%'
+        d_cls = 'delta-pos' if d_val > 0 else ('delta-neg' if d_val < 0 else 'delta-neutral')
+        jev_val = row['scores']['Jev zero-shot']['mean']
+        best_val = row['best']
+        best_model = ', '.join(row['bestModels'])
+        
+        cards.append(f'''<div class="sm-card" data-dataset="{html.escape(row['dataset'])}" tabindex="0" role="button">
+  <div class="sm-card-head">
+    <div>
+      <span class="sm-card-domain font-mono">{row['domain']} · {row['classes']} cl</span>
+      <h4 class="sm-card-title">{html.escape(row['dataset'])}</h4>
+    </div>
+    <span class="delta-chip {d_cls} font-mono">{d_str}</span>
+  </div>
+  
+  <div class="sm-spark">
+    <div class="sm-spark-track">
+      <div class="sm-spark-bar" style="left: {min(jev_val, best_val):.1f}%; width: {abs(jev_val - best_val):.1f}%;"></div>
+      <div class="sm-spark-dot dot-classic" style="left: {best_val:.1f}%;" title="Best Classical: {best_val:.1f}%"></div>
+      <div class="sm-spark-dot dot-jev" style="left: {jev_val:.1f}%;" title="Jev Zero-Shot: {jev_val:.1f}%"></div>
+    </div>
+    <div class="sm-spark-axis font-mono">
+      <span>0%</span>
+      <span>50%</span>
+      <span>100%</span>
+    </div>
+  </div>
+
+  <div class="sm-card-stats font-mono">
+    <div class="sm-stat">
+      <span class="sm-stat-label">Jev Zero</span>
+      <span class="sm-stat-val text-accent">{jev_val:.1f}%</span>
+    </div>
+    <div class="sm-stat">
+      <span class="sm-stat-label">Best ML ({html.escape(best_model[:12])})</span>
+      <span class="sm-stat-val text-muted">{best_val:.1f}%</span>
+    </div>
+  </div>
+</div>''')
+    return ''.join(cards)
+
 def summary_table(panel):
     out = [
         '<caption class="sr-only">Main benchmark comparison: Jev vs best classical pipeline by dataset</caption>',
         '<thead><tr>',
-        '<th scope="col" class="th-dataset">Dataset</th>',
-        '<th scope="col" class="th-domain">Domain</th>',
-        '<th scope="col" class="th-classes text-right">Classes</th>',
-        '<th scope="col" class="th-test text-right">Test N</th>',
-        '<th scope="col" class="th-score text-right">Jev Zero-shot</th>',
-        '<th scope="col" class="th-score text-right">Jev Few-shot</th>',
-        '<th scope="col" class="th-best text-right">Best Classical</th>',
-        '<th scope="col" class="th-delta text-right">Δ (Zero vs Best)</th>',
-        '<th scope="col" class="th-action text-center"><span class="sr-only">Details</span></th>',
+        '<th scope="col" class="th-dataset sortable" data-sort="dataset">Dataset ↕</th>',
+        '<th scope="col" class="th-domain sortable" data-sort="domain">Domain ↕</th>',
+        '<th scope="col" class="th-classes text-right sortable" data-sort="classes">Classes ↕</th>',
+        '<th scope="col" class="th-test text-right sortable" data-sort="testRows">Test N ↕</th>',
+        '<th scope="col" class="th-score text-right sortable" data-sort="jevZero">Jev Zero-shot ↕</th>',
+        '<th scope="col" class="th-score text-right sortable" data-sort="jevFew">Jev Few-shot ↕</th>',
+        '<th scope="col" class="th-best text-right sortable" data-sort="best">Best Classical ↕</th>',
+        '<th scope="col" class="th-delta text-right sortable" data-sort="delta">Δ vs Best ↕</th>',
+        '<th scope="col" class="th-action text-center"><span class="sr-only">Inspect</span></th>',
         '</tr></thead>',
         '<tbody>'
     ]
@@ -153,7 +300,7 @@ def summary_table(panel):
         delta_str = f'+{d_val:.1f}%' if d_val > 0 else f'{d_val:.1f}%'
         best_model_name = ', '.join(row['bestModels'])
         
-        out.append(f'''<tr class="summary-row" data-dataset="{html.escape(row['dataset'])}" tabindex="0" role="button" aria-expanded="false" title="Click to view full model scores and metadata for {html.escape(row['dataset'])}">
+        out.append(f'''<tr class="summary-row" data-dataset="{html.escape(row['dataset'])}" tabindex="0" role="button" aria-expanded="false" title="Click to inspect model scores for {html.escape(row['dataset'])}">
   <td class="font-medium text-foreground"><span class="ds-name">{html.escape(row['dataset'])}</span></td>
   <td><span class="badge-domain badge-{row['kind']}">{row['domain']}</span></td>
   <td class="text-right font-mono">{row['classes']}</td>
@@ -162,38 +309,7 @@ def summary_table(panel):
   <td class="text-right font-mono">{row['scores']['Jev few-shot']['mean']:.1f}% <span class="sd-sub">±{row['scores']['Jev few-shot']['sd']:.1f}</span></td>
   <td class="text-right font-mono font-semibold {'score-winner' if row['best'] > row['scores']['Jev zero-shot']['mean'] else ''}">{row['best']:.1f}% <span class="best-model-label">({html.escape(best_model_name)})</span></td>
   <td class="text-right font-mono"><span class="delta-chip {delta_cls}">{delta_str}</span></td>
-  <td class="text-center"><span class="row-chevron" aria-hidden="true">▾</span></td>
-</tr>
-<tr class="detail-row hidden" id="detail-{re.sub(r'[^a-zA-Z0-9]', '-', row['dataset']).lower()}">
-  <td colspan="9" class="detail-cell">
-    <div class="detail-content">
-      <div class="detail-header">
-        <div>
-          <h4 class="detail-title">{html.escape(row['dataset'])} <span class="detail-badge">{row['domain']} · {row['classes']} classes · {row['testRows']:,} test rows</span></h4>
-          <p class="detail-desc">{html.escape(row['description'])}</p>
-        </div>
-        <div class="detail-meta-group">
-          <span class="meta-tag">Holdout Seed: <code>20260920</code></span>
-          <span class="meta-tag">Training Seeds: <code>2027, 2028, 2029</code></span>
-        </div>
-      </div>
-      <div class="detail-scores-grid">''')
-        
-        # Grid of all 14 models
-        for m in panel['models']:
-            s = row['scores'][m]
-            is_best = (s['mean'] == max(sc['mean'] for sc in row['scores'].values()))
-            is_jev = m.startswith('Jev')
-            card_cls = 'best-card' if is_best else ('jev-card' if is_jev else '')
-            out.append(f'''<div class="score-card {card_cls}">
-          <span class="score-model-name">{html.escape(m)}</span>
-          <span class="score-val font-mono">{s['mean']:.1f}%</span>
-          <span class="score-sd font-mono">±{s['sd']:.1f} (n={s['n']})</span>
-        </div>''')
-            
-        out.append('''      </div>
-    </div>
-  </td>
+  <td class="text-center"><span class="inspect-tag font-mono">inspect →</span></td>
 </tr>''')
     out.append('</tbody>')
     return ''.join(out)
@@ -218,25 +334,6 @@ def full_table(panel):
         out.append('</tr>')
     return ''.join(out) + '</tbody>'
 
-def chart_rows(rows):
-    result = []
-    for row in rows:
-        bars = []
-        for key, value, label in [
-            ('zero', row['scores']['Jev zero-shot']['mean'], 'Jev zero-shot prompts'),
-            ('few', row['scores']['Jev few-shot']['mean'], 'Jev few-shot prompts'),
-            ('classic', row['best'], 'Best classical pipeline: ' + ', '.join(row['bestModels']))
-        ]:
-            bars.append(f'<div class="bar-line" style="--value:{value}%" aria-label="{html.escape(label)}: {value:.1f}%"><span class="bar {key}"></span><span class="value font-mono">{value:.1f}%</span></div>')
-        result.append(f'''<div class="chart-row" data-kind="{row['kind']}">
-  <div class="chart-label">
-    <strong class="chart-ds-title">{html.escape(row["dataset"])}</strong>
-    <span class="chart-ds-meta">{row["kind"].title()} · {row["testRows"]:,} test rows</span>
-  </div>
-  <div class="bars">{"".join(bars)}</div>
-</div>''')
-    return ''.join(result) + '<div class="axis font-mono" aria-hidden="true"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>'
-
 def build():
     data = load_data()
     (DOCS / 'assets/data.js').write_text('window.BENCHMARK = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n', encoding='utf-8')
@@ -244,20 +341,22 @@ def build():
     
     page = template.replace('__SUMMARY_TABLE__', summary_table(data['raw']))
     page = page.replace('__FULL_TABLE__', full_table(data['raw']))
-    page = page.replace('__CHART__', chart_rows(data['raw']['rows']))
+    page = page.replace('__DUMBBELL_SVG__', build_dumbbell_chart_svg(data['raw']['rows']))
+    page = page.replace('__DIVERGING_SVG__', build_diverging_chart_svg(data['raw']['rows']))
+    page = page.replace('__DATASET_GRID__', build_dataset_grid(data['raw']['rows']))
     
     for asset in ('assets/report.css', 'assets/report.js', 'assets/data.js'):
         if (DOCS / asset).exists():
             version = hashlib.sha256((DOCS / asset).read_bytes()).hexdigest()[:12]
             page = page.replace(f'"{asset}"', f'"{asset}?v={version}"')
             
-    assert '__SUMMARY_TABLE__' not in page and '__FULL_TABLE__' not in page and '__CHART__' not in page, "Unreplaced template tags!"
+    assert '__SUMMARY_TABLE__' not in page and '__DUMBBELL_SVG__' not in page and '__DIVERGING_SVG__' not in page, "Unreplaced template tags!"
     (DOCS / 'index.html').write_text(page, encoding='utf-8')
     
     for panel in data:
         name = f'{panel}_balanced_accuracy.csv'
         shutil.copyfile(ROOT / 'published_results' / name, DOCS / 'data' / name)
-    print('Successfully built docs/index.html and updated data assets from both published result panels.')
+    print('Successfully built docs/index.html with interactive SVG charts and data assets.')
 
 if __name__ == '__main__':
     build()
