@@ -410,20 +410,39 @@
       lines.push('</svg>');
       container.innerHTML = lines.join('');
 
-      // Dedicated Mobile Difference List
+      // Dedicated Mobile Difference List with Zero-Centered Displacement Bar
       if (mobileContainer) {
+        const minVal = -40.0;
+        const maxVal = 15.0;
+        const rangeVal = maxVal - minVal;
+        const zeroPct = ((0.0 - minVal) / rangeVal) * 100.0;
+
         mobileContainer.innerHTML = rows.map(row => {
           const dVal = row.delta || 0;
           const dStr = dVal > 0 ? `+${dVal.toFixed(1)} pp` : `${dVal.toFixed(1)} pp`;
           const dCls = dVal > 0 ? 'delta-pos' : (dVal < 0 ? 'delta-neg' : 'delta-neutral');
+          const isPos = dVal >= 0;
+          const barLeft = isPos ? zeroPct : ((dVal - minVal) / rangeVal) * 100.0;
+          const barWidth = (Math.abs(dVal) / rangeVal) * 100.0;
+          const barColor = isPos ? 'var(--bar-jev)' : 'var(--bar-classic)';
+
           return `
             <div class="mobile-diff-card font-mono" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="mobile-card-head">
                 <div>
-                  <span class="mobile-card-meta">${escape(row.domain)}</span>
-                  <div class="mobile-card-title font-sans" style="margin: 0;">${escape(row.dataset)}</div>
+                  <span class="mobile-card-meta">${escape(row.domain)} · ${row.classes} Classes</span>
+                  <h4 class="mobile-card-title font-sans">${escape(row.dataset)}</h4>
                 </div>
                 <span class="delta-chip ${dCls}">${dStr}</span>
+              </div>
+              <div class="mobile-diff-track-wrap" style="position: relative; height: 6px; background: var(--secondary); border: 1px solid var(--border); border-radius: 3px; margin: 0.5rem 0 0.25rem;">
+                <div style="position: absolute; left: ${zeroPct.toFixed(1)}%; top: -2px; bottom: -2px; width: 1.5px; background: var(--foreground); z-index: 2;" title="Parity (0.0)"></div>
+                <div style="position: absolute; left: ${barLeft.toFixed(1)}%; width: ${Math.max(1.5, barWidth).toFixed(1)}%; height: 100%; background: ${barColor}; border-radius: 2px;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.5625rem; color: var(--muted-foreground);">
+                <span>← ML Lead (−40)</span>
+                <span style="color: var(--foreground); font-weight: 600;">0.0</span>
+                <span>Jev Lead (+15) →</span>
               </div>
             </div>
           `;
