@@ -42,6 +42,15 @@
         </a>
       </div>
     </div>
+    <nav class="mobile-nav-strip font-mono" aria-label="Mobile Navigation">
+      <a href="#results">Results</a>
+      <a href="#visuals">Visuals</a>
+      <a href="#analysis">Findings</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#models">Models</a>
+      <a href="#reproducibility">Reproduce</a>
+      <a href="#limitations">Limitations</a>
+    </nav>
   </header>
 
   <main>
@@ -235,7 +244,7 @@
                 <span class="vis-legend-item"><span class="vis-swatch classic"></span> Best Classical ML</span>
               </div>
             </div>
-            <div id="dumbbell-chart-wrap">
+            <div id="dumbbell-chart-wrap" class="chart-svg-container">
               __DUMBBELL_SVG__
             </div>
           </div>
@@ -252,7 +261,7 @@
                 <span class="vis-legend-item">Jev Lead →</span>
               </div>
             </div>
-            <div id="diverging-chart-wrap">
+            <div id="diverging-chart-wrap" class="chart-svg-container">
               __DIVERGING_SVG__
             </div>
           </div>
@@ -267,6 +276,7 @@
         <!-- Summary Results Table -->
         <div class="section-tag font-mono" style="margin-bottom: 0.75rem;">Exact Results Table · Sortable Columns</div>
         <div class="table-container">
+          <div class="table-scroll-hint font-mono">← Swipe horizontally to view all model columns →</div>
           <table id="summary-table">
             __SUMMARY_TABLE__
           </table>
