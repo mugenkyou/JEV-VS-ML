@@ -101,7 +101,7 @@
       if (valJevFew) valJevFew.textContent = `${jevFew.toFixed(1)}%`;
       if (valClassic) valClassic.textContent = `${classicBest.toFixed(1)}%`;
       if (lblClassic) lblClassic.textContent = `Best ML (${bestModelName})`;
-      
+
       if (deltaEl) {
         deltaEl.textContent = dVal > 0 ? `+${dVal.toFixed(1)} pp` : `${dVal.toFixed(1)} pp`;
         deltaEl.className = `drawer-m-val font-mono ${dVal > 0 ? 'text-accent' : 'text-muted'}`;
@@ -165,122 +165,272 @@
     document.body.style.overflow = '';
   };
 
+  // Visualization State
+  let chartSort = 'delta'; // 'delta' | 'dataset' | 'jev' | 'classic'
+
+  const annotateDataset = (delta, isMaxPos, isMaxNeg, isParity) => {
+    if (isMaxPos) return 'Largest Jev Lead';
+    if (isMaxNeg) return 'Largest ML Lead';
+    if (isParity) return 'Near Parity';
+    return '';
+  };
+
   // --- SVG Chart Builders ---
-  const renderDumbbellChart = (rows) => {
+  const renderRangeHeroChart = (sourceRows) => {
     const container = document.getElementById('dumbbell-chart-wrap');
+    const mobileContainer = document.getElementById('mobile-range-list');
     if (!container) return;
 
     try {
-      if (!rows || !rows.length) {
+      if (!sourceRows || !sourceRows.length) {
         container.innerHTML = '<p class="text-muted text-center" style="padding: 2rem 0;">No dataset results match current filter.</p>';
+        if (mobileContainer) mobileContainer.innerHTML = '<p class="text-muted text-center" style="padding: 2rem 0;">No dataset results match current filter.</p>';
         return;
       }
 
-      const hRow = 44;
-      const paddingTop = 20;
-      const paddingBottom = 30;
+      // Sort rows based on chartSort control
+      const rows = [...sourceRows].sort((a, b) => {
+        if (chartSort === 'dataset') return a.dataset.localeCompare(b.dataset);
+        if (chartSort === 'jev') return b.scores['Jev zero-shot'].mean - a.scores['Jev zero-shot'].mean;
+        if (chartSort === 'classic') return b.best - a.best;
+        // Default: delta descending (Largest Jev lead -> near parity -> largest classical lead)
+        return b.delta - a.delta;
+      });
+
+      const hRow = 56;
+      const paddingTop = 28;
+      const paddingBottom = 36;
       const totalHeight = paddingTop + rows.length * hRow + paddingBottom;
-      const xOffset = 140;
-      const widthChart = 620;
 
-      let lines = [`<svg class="dumbbell-svg" viewBox="0 0 800 ${totalHeight}" width="100%" height="${totalHeight}">`];
+      const viewWidth = 960;
+      const xLabel = 200;
+      const xChartStart = 220;
+      const xChartEnd = 760;
+      const xChartWidth = xChartEnd - xChartStart;
+      const xDelta = 820;
 
-      for (const tick of [0, 25, 50, 75, 100]) {
-        const gx = xOffset + (tick / 100.0) * widthChart;
-        lines.push(`<line x1="${gx}" y1="${paddingTop}" x2="${gx}" y2="${totalHeight - paddingBottom}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>`);
-        lines.push(`<text x="${gx}" y="${totalHeight - 10}" text-anchor="middle" font-size="10" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${tick}%</text>`);
+      const minScale = 40.0;
+      const maxScale = 100.0;
+      const scaleRange = maxScale - minScale;
+
+      const maxDelta = Math.max(...rows.map(r => r.delta));
+      const minDelta = Math.min(...rows.map(r => r.delta));
+
+      let lines = [
+        `<svg class="range-hero-svg" viewBox="0 0 ${viewWidth} ${totalHeight}" width="100%" height="${totalHeight}" aria-label="Jev vs Classical Balanced Accuracy Range Comparison Plot">`
+      ];
+
+      // Axis Grid Ticks
+      for (const tick of [40, 50, 60, 70, 80, 90, 100]) {
+        const tx = xChartStart + ((tick - minScale) / scaleRange) * xChartWidth;
+        lines.push(`<line x1="${tx.toFixed(1)}" y1="${paddingTop - 10}" x2="${tx.toFixed(1)}" y2="${totalHeight - paddingBottom}" stroke="var(--border)" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>`);
+        lines.push(`<text x="${tx.toFixed(1)}" y="${totalHeight - 14}" text-anchor="middle" font-size="10" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${tick}%</text>`);
       }
 
+      // Column Headers
+      lines.push(`<text x="${xChartStart}" y="16" font-size="10" font-family="ui-monospace, monospace" fill="var(--muted-foreground)" font-weight="600">BALANCED ACCURACY SCALE</text>`);
+      lines.push(`<text x="${xDelta}" y="16" font-size="10" font-family="ui-monospace, monospace" fill="var(--muted-foreground)" font-weight="600">SIGNED Δ (pp)</text>`);
+
       rows.forEach((row, i) => {
-        const y = paddingTop + i * hRow + 22;
+        const y = paddingTop + i * hRow + 24;
         const jevScore = row.scores['Jev zero-shot'] ? row.scores['Jev zero-shot'].mean : 0;
         const classicScore = row.best || 0;
-        const xJev = xOffset + (jevScore / 100.0) * widthChart;
-        const xClassic = xOffset + (classicScore / 100.0) * widthChart;
+        const deltaVal = row.delta || 0;
+
+        const xJev = xChartStart + (Math.max(0.0, Math.min(100.0, jevScore) - minScale) / scaleRange) * xChartWidth;
+        const xClassic = xChartStart + (Math.max(0.0, Math.min(100.0, classicScore) - minScale) / scaleRange) * xChartWidth;
         const xMin = Math.min(xJev, xClassic);
         const xMax = Math.max(xJev, xClassic);
-        const trackColor = jevScore >= classicScore ? 'var(--accent)' : 'var(--muted-foreground)';
+
+        const isMaxPos = (deltaVal === maxDelta && deltaVal > 2.0);
+        const isMaxNeg = (deltaVal === minDelta && deltaVal < -5.0);
+        const isParity = (Math.abs(deltaVal) <= 1.5);
+        const annotation = annotateDataset(deltaVal, isMaxPos, isMaxNeg, isParity);
+
+        const deltaStr = deltaVal > 0 ? `+${deltaVal.toFixed(1)} pp` : `${deltaVal.toFixed(1)} pp`;
+        const deltaColor = deltaVal > 0 ? 'var(--delta-pos-fg)' : (deltaVal < -2.0 ? 'var(--delta-neg-fg)' : 'var(--muted-foreground)');
+        const deltaBg = deltaVal > 0 ? 'var(--delta-pos-bg)' : (deltaVal < -2.0 ? 'var(--delta-neg-bg)' : 'var(--secondary)');
+        const trackStroke = deltaVal >= 0 ? 'var(--bar-jev)' : 'var(--bar-classic)';
 
         lines.push(`
-          <g class="dumbbell-row" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
-            <text x="130" y="${y + 4}" text-anchor="end" font-size="12" font-weight="600" fill="var(--foreground)">${escape(row.dataset)}</text>
-            <line x1="${xMin}" y1="${y}" x2="${xMax}" y2="${y}" stroke="${trackColor}" stroke-width="2" stroke-opacity="0.6"/>
-            <circle cx="${xClassic}" cy="${y}" r="5.5" fill="var(--bar-classic)" stroke="var(--card)" stroke-width="2"/>
-            <circle cx="${xJev}" cy="${y}" r="6.5" fill="var(--bar-jev)" stroke="var(--card)" stroke-width="2"/>
-            ${Math.abs(xJev - xClassic) > 40
-              ? `<text x="${xClassic}" y="${y - 9}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${classicScore.toFixed(1)}%</text>
-                 <text x="${xJev}" y="${y - 9}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="700" fill="var(--bar-jev)">${jevScore.toFixed(1)}%</text>`
-              : `<text x="${Math.max(xJev, xClassic) + 12}" y="${y + 3}" text-anchor="start" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">Jev ${jevScore.toFixed(1)}% / ML ${classicScore.toFixed(1)}%</text>`
+          <g class="range-row" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
+            <rect x="0" y="${y - 20}" width="${viewWidth}" height="${hRow}" fill="transparent" class="row-hover-bg" rx="4"/>
+            <text x="${xLabel}" y="${y - 2}" text-anchor="end" font-size="12.5" font-weight="600" fill="var(--foreground)">${escape(row.dataset)}</text>
+            <text x="${xLabel}" y="${y + 12}" text-anchor="end" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${escape(row.domain.toUpperCase())} · ${row.classes} CL</text>
+            <line x1="${xChartStart}" y1="${y}" x2="${xChartEnd}" y2="${y}" stroke="var(--border)" stroke-width="1.5" opacity="0.4"/>
+            <line x1="${xMin.toFixed(1)}" y1="${y}" x2="${xMax.toFixed(1)}" y2="${y}" stroke="${trackStroke}" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="${xClassic.toFixed(1)}" cy="${y}" r="6" fill="var(--bar-classic)" stroke="var(--card)" stroke-width="2"/>
+            <circle cx="${xJev.toFixed(1)}" cy="${y}" r="7" fill="var(--bar-jev)" stroke="var(--card)" stroke-width="2"/>
+            ${Math.abs(xJev - xClassic) >= 36
+              ? `<text x="${xClassic.toFixed(1)}" y="${y - 10}" text-anchor="middle" font-size="9.5" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${classicScore.toFixed(1)}%</text>
+                 <text x="${xJev.toFixed(1)}" y="${y - 10}" text-anchor="middle" font-size="9.5" font-family="ui-monospace, monospace" font-weight="700" fill="var(--bar-jev)">${jevScore.toFixed(1)}%</text>`
+              : `<text x="${(Math.max(xJev, xClassic) + 14).toFixed(1)}" y="${y - 8}" text-anchor="start" font-size="9" font-family="ui-monospace, monospace" fill="var(--bar-jev)" font-weight="600">Jev ${jevScore.toFixed(1)}%</text>
+                 <text x="${(Math.max(xJev, xClassic) + 14).toFixed(1)}" y="${y + 8}" text-anchor="start" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">ML ${classicScore.toFixed(1)}%</text>`
             }
+            <rect x="${xDelta}" y="${y - 11}" width="68" height="22" rx="4" fill="${deltaBg}" stroke="${deltaColor}" stroke-opacity="0.3"/>
+            <text x="${xDelta + 34}" y="${y + 4}" text-anchor="middle" font-size="10.5" font-family="ui-monospace, monospace" font-weight="700" fill="${deltaColor}">${deltaStr}</text>
+            ${annotation ? `<text x="${xDelta + 78}" y="${y + 4}" text-anchor="start" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)" class="editorial-tag">${annotation}</text>` : ''}
           </g>
         `);
       });
 
       lines.push('</svg>');
       container.innerHTML = lines.join('');
+
+      // Dedicated Mobile Comparison Rows
+      if (mobileContainer) {
+        mobileContainer.innerHTML = rows.map(row => {
+          const jevScore = row.scores['Jev zero-shot'] ? row.scores['Jev zero-shot'].mean : 0;
+          const classicScore = row.best || 0;
+          const deltaVal = row.delta || 0;
+          const deltaStr = deltaVal > 0 ? `+${deltaVal.toFixed(1)} pp` : `${deltaVal.toFixed(1)} pp`;
+          const deltaCls = deltaVal > 0 ? 'delta-pos' : (deltaVal < 0 ? 'delta-neg' : 'delta-neutral');
+          const bestModelName = (row.bestModels && row.bestModels.length) ? row.bestModels[0] : 'Classical';
+
+          return `
+            <div class="mobile-range-card font-mono" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
+              <div class="mobile-card-head">
+                <div>
+                  <span class="mobile-card-meta">${escape(row.domain)} · ${row.classes} Classes · N=${row.testRows.toLocaleString('en-US')}</span>
+                  <h4 class="mobile-card-title font-sans">${escape(row.dataset)}</h4>
+                </div>
+                <span class="delta-chip ${deltaCls}">${deltaStr}</span>
+              </div>
+              <div class="mobile-spark-wrap">
+                <div class="mobile-spark-track">
+                  <div class="mobile-spark-range" style="left: ${Math.min(jevScore, classicScore).toFixed(1)}%; width: ${Math.abs(jevScore - classicScore).toFixed(1)}%;"></div>
+                  <div class="mobile-spark-dot dot-classic" style="left: ${classicScore.toFixed(1)}%;"></div>
+                  <div class="mobile-spark-dot dot-jev" style="left: ${jevScore.toFixed(1)}%;"></div>
+                </div>
+                <div class="mobile-spark-labels">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+              <div class="mobile-scores-grid">
+                <div class="mobile-score-item">
+                  <span class="mobile-score-label">Jev Zero-Shot</span>
+                  <span class="mobile-score-val text-accent">${jevScore.toFixed(1)}%</span>
+                </div>
+                <div class="mobile-score-item">
+                  <span class="mobile-score-label">Best ML (${escape(bestModelName.slice(0, 14))})</span>
+                  <span class="mobile-score-val text-muted">${classicScore.toFixed(1)}%</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     } catch (err) {
-      console.error('Error rendering dumbbell chart:', err);
+      console.error('Error rendering Range Comparison chart:', err);
       container.innerHTML = '<p class="text-muted text-center" style="padding: 1.5rem 0;">Unable to render comparison chart.</p>';
     }
   };
 
-  const renderDivergingChart = (rows) => {
+  const renderDifferenceChart = (sourceRows) => {
     const container = document.getElementById('diverging-chart-wrap');
+    const mobileContainer = document.getElementById('mobile-diff-list');
     if (!container) return;
 
     try {
-      if (!rows || !rows.length) {
+      if (!sourceRows || !sourceRows.length) {
         container.innerHTML = '<p class="text-muted text-center" style="padding: 2rem 0;">No dataset results match current filter.</p>';
+        if (mobileContainer) mobileContainer.innerHTML = '<p class="text-muted text-center" style="padding: 2rem 0;">No dataset results match current filter.</p>';
         return;
       }
 
-      const hRow = 38;
-      const paddingTop = 20;
-      const paddingBottom = 25;
+      // Sort rows based on chartSort control
+      const rows = [...sourceRows].sort((a, b) => {
+        if (chartSort === 'dataset') return a.dataset.localeCompare(b.dataset);
+        if (chartSort === 'jev') return b.scores['Jev zero-shot'].mean - a.scores['Jev zero-shot'].mean;
+        if (chartSort === 'classic') return b.best - a.best;
+        return b.delta - a.delta;
+      });
+
+      const hRow = 42;
+      const paddingTop = 30;
+      const paddingBottom = 34;
       const totalHeight = paddingTop + rows.length * hRow + paddingBottom;
+
+      const viewWidth = 960;
+      const xLabel = 200;
+      const chartX = 220;
+      const chartW = 680;
+
       const minVal = -40.0;
       const maxVal = 15.0;
       const rangeVal = maxVal - minVal;
-      const chartX = 150;
-      const chartW = 600;
       const zeroX = chartX + ((0.0 - minVal) / rangeVal) * chartW;
 
-      let lines = [`<svg class="diverging-svg" viewBox="0 0 800 ${totalHeight}" width="100%" height="${totalHeight}">`];
+      let lines = [
+        `<svg class="diff-dot-svg" viewBox="0 0 ${viewWidth} ${totalHeight}" width="100%" height="${totalHeight}" aria-label="Zero-Centered Signed Difference Plot">`
+      ];
+
+      // Side Region Shading
+      lines.push(`<rect x="${chartX}" y="${paddingTop - 12}" width="${(zeroX - chartX).toFixed(1)}" height="${totalHeight - paddingTop - paddingBottom + 12}" fill="var(--secondary)" opacity="0.4"/>`);
+
+      // Region Headers
+      lines.push(`<text x="${chartX + 10}" y="16" font-size="9.5" font-family="ui-monospace, monospace" fill="var(--muted-foreground)" font-weight="600">← CLASSICAL ADVANTAGE</text>`);
+      lines.push(`<text x="${chartX + chartW - 10}" y="16" text-anchor="end" font-size="9.5" font-family="ui-monospace, monospace" fill="var(--accent)" font-weight="600">JEV ADVANTAGE →</text>`);
 
       for (const tick of [-40, -30, -20, -10, 0, 10]) {
         const tx = chartX + ((tick - minVal) / rangeVal) * chartW;
         const isZero = tick === 0;
         const lineColor = isZero ? 'var(--foreground)' : 'var(--border)';
-        const lineWidth = isZero ? '1.5' : '1';
-        const dash = isZero ? '' : 'stroke-dasharray="2 2"';
-        lines.push(`<line x1="${tx}" y1="${paddingTop}" x2="${tx}" y2="${totalHeight - paddingBottom}" stroke="${lineColor}" stroke-width="${lineWidth}" ${dash}/>`);
-        const tickStr = tick > 0 ? `+${tick}pp` : (tick < 0 ? `${tick}pp` : '0.0');
-        lines.push(`<text x="${tx}" y="${totalHeight - 8}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${tickStr}</text>`);
+        const lineWidth = isZero ? '1.8' : '1';
+        const dash = isZero ? '' : 'stroke-dasharray="2 3"';
+        lines.push(`<line x1="${tx.toFixed(1)}" y1="${paddingTop - 8}" x2="${tx.toFixed(1)}" y2="${totalHeight - paddingBottom}" stroke="${lineColor}" stroke-width="${lineWidth}" ${dash} opacity="0.8"/>`);
+        const tickStr = tick > 0 ? `+${tick} pp` : (tick < 0 ? `${tick} pp` : '0.0 (Parity)');
+        const tickWeight = isZero ? '700' : '500';
+        const tickColor = isZero ? 'var(--foreground)' : 'var(--muted-foreground)';
+        lines.push(`<text x="${tx.toFixed(1)}" y="${totalHeight - 12}" text-anchor="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="${tickWeight}" fill="${tickColor}">${tickStr}</text>`);
       }
 
       rows.forEach((row, i) => {
-        const y = paddingTop + i * hRow + 12;
+        const y = paddingTop + i * hRow + 18;
         const dVal = row.delta || 0;
-        const bx = chartX + ((Math.min(0, dVal) - minVal) / rangeVal) * chartW;
-        const bw = (Math.abs(dVal) / rangeVal) * chartW;
-        const fillColor = dVal > 0 ? 'var(--delta-pos-fg)' : 'var(--bar-classic)';
-        const textX = zeroX + (dVal >= 0 ? bw + 6 : -(bw + 6));
-        const anchor = dVal >= 0 ? 'start' : 'end';
+        const dx = chartX + ((dVal - minVal) / rangeVal) * chartW;
+        const isPos = dVal > 0;
+        const fillColor = isPos ? 'var(--bar-jev)' : 'var(--bar-classic)';
         const dStr = dVal > 0 ? `+${dVal.toFixed(1)} pp` : `${dVal.toFixed(1)} pp`;
 
         lines.push(`
-          <g class="diverging-row" data-dataset="${escape(row.dataset)}" onclick="window.openDrawer('${escape(row.dataset)}')">
-            <text x="140" y="${y + 11}" text-anchor="end" font-size="11" font-weight="500" fill="var(--foreground)">${escape(row.dataset)}</text>
-            <rect x="${bx}" y="${y}" width="${Math.max(2, bw)}" height="14" fill="{fillColor}" rx="2" opacity="0.85"/>
-            <text x="${textX}" y="${y + 11}" text-anchor="${anchor}" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="${fillColor}">${dStr}</text>
+          <g class="diff-row" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
+            <rect x="0" y="${y - 16}" width="${viewWidth}" height="${hRow}" fill="transparent" class="row-hover-bg" rx="4"/>
+            <text x="${xLabel}" y="${y - 2}" text-anchor="end" font-size="12" font-weight="600" fill="var(--foreground)">${escape(row.dataset)}</text>
+            <text x="${xLabel}" y="${y + 11}" text-anchor="end" font-size="8.5" font-family="ui-monospace, monospace" fill="var(--muted-foreground)">${escape(row.domain.toUpperCase())}</text>
+            <line x1="${zeroX.toFixed(1)}" y1="${y}" x2="${dx.toFixed(1)}" y2="${y}" stroke="${fillColor}" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="${dx.toFixed(1)}" cy="${y}" r="6.5" fill="${fillColor}" stroke="var(--card)" stroke-width="2"/>
+            <text x="${(dVal >= 0 ? dx + 12 : dx - 12).toFixed(1)}" y="${y + 4}" text-anchor="${dVal >= 0 ? 'start' : 'end'}" font-size="9.5" font-family="ui-monospace, monospace" font-weight="700" fill="${fillColor}">${dStr}</text>
           </g>
         `);
       });
 
       lines.push('</svg>');
       container.innerHTML = lines.join('');
+
+      // Dedicated Mobile Difference List
+      if (mobileContainer) {
+        mobileContainer.innerHTML = rows.map(row => {
+          const dVal = row.delta || 0;
+          const dStr = dVal > 0 ? `+${dVal.toFixed(1)} pp` : `${dVal.toFixed(1)} pp`;
+          const dCls = dVal > 0 ? 'delta-pos' : (dVal < 0 ? 'delta-neg' : 'delta-neutral');
+          return `
+            <div class="mobile-diff-card font-mono" data-dataset="${escape(row.dataset)}" tabindex="0" role="button" onclick="window.openDrawer('${escape(row.dataset)}')">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span class="mobile-card-meta">${escape(row.domain)}</span>
+                  <div class="mobile-card-title font-sans" style="margin: 0;">${escape(row.dataset)}</div>
+                </div>
+                <span class="delta-chip ${dCls}">${dStr}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     } catch (err) {
-      console.error('Error rendering diverging chart:', err);
+      console.error('Error rendering Difference chart:', err);
       container.innerHTML = '<p class="text-muted text-center" style="padding: 1.5rem 0;">Unable to render difference chart.</p>';
     }
   };
@@ -312,7 +462,7 @@
               </div>
               <span class="delta-chip ${dCls} font-mono">${dStr}</span>
             </div>
-            
+
             <div class="sm-spark">
               <div class="sm-spark-track">
                 <div class="sm-spark-bar" style="left: ${Math.min(jevVal, bestVal).toFixed(1)}%; width: ${Math.abs(jevVal - bestVal).toFixed(1)}%;"></div>
@@ -433,8 +583,8 @@
         csvBtn.setAttribute('download', `${panel}_balanced_accuracy.csv`);
       }
 
-      renderDumbbellChart(rows);
-      renderDivergingChart(rows);
+      renderRangeHeroChart(rows);
+      renderDifferenceChart(rows);
       renderSwissGrid(rows);
       renderSummaryTable(rows);
       updateSortIndicators();
@@ -619,6 +769,16 @@ All offline checks PASSED. Ready for evaluation.</span>`,
 
     document.querySelectorAll('input[name="panel"]').forEach(el => el.addEventListener('change', render));
     document.querySelectorAll('input[name="domain-filter"]').forEach(el => el.addEventListener('change', render));
+
+    // Chart Sorting Controls
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        chartSort = btn.getAttribute('data-chart-sort') || 'delta';
+        render();
+      });
+    });
 
     // Table sorting
     document.querySelectorAll('th.sortable').forEach(th => {

@@ -96,7 +96,7 @@
                 <path d="M 180 30 L 70 80 M 180 30 L 140 90 M 180 30 L 220 90 M 180 30 L 290 80" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3 3"/>
                 <path d="M 70 80 L 50 160 M 70 80 L 110 160 M 140 90 L 110 160 M 140 90 L 150 160" stroke="var(--border)" stroke-width="1.2"/>
                 <path d="M 220 90 L 210 160 M 220 90 L 250 160 M 290 80 L 250 160 M 290 80 L 310 160" stroke="var(--border)" stroke-width="1.2"/>
-                
+
                 <!-- Center Jev Node -->
                 <circle cx="180" cy="30" r="16" fill="var(--bar-jev)" stroke="var(--card)" stroke-width="3"/>
                 <text x="180" y="34" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff" font-family="ui-monospace, monospace">JEV</text>
@@ -230,40 +230,65 @@
           </div>
         </div>
 
-        <!-- Interactive Visuals Grid (Dumbbell + Diverging Difference) (WOW #2) -->
-        <div id="visuals" class="visuals-grid">
-          <!-- Dumbbell Comparison Chart -->
-          <div class="vis-card">
+        <!-- Main Visual Benchmark Explorer -->
+        <div id="visuals" class="visuals-stack">
+          <!-- 1. Primary Hero Visual: Full-Width Performance Range Comparison -->
+          <div class="vis-card vis-card-hero">
             <div class="vis-head">
-              <div>
+              <div class="vis-head-main">
+                <div class="vis-badge-tag font-mono">Primary Visual · Range Comparison</div>
                 <h3 class="vis-title">Performance Range Comparison</h3>
-                <span class="font-mono text-muted" style="font-size: 0.6875rem;">Balanced Accuracy (%) · Click any row to inspect</span>
+                <p class="vis-subtitle font-mono">Balanced Accuracy (%) on test holdout · One row per dataset · Direct signed Δ displacement</p>
               </div>
-              <div class="vis-legend font-mono">
-                <span class="vis-legend-item"><span class="vis-swatch jev"></span> Jev Zero-Shot</span>
-                <span class="vis-legend-item"><span class="vis-swatch classic"></span> Best Classical ML</span>
+
+              <div class="vis-head-controls">
+                <div class="vis-sort-group font-mono">
+                  <span class="control-label">Sort By:</span>
+                  <div class="segmented-control vis-sort-control">
+                    <button type="button" class="sort-btn active" data-chart-sort="delta">Δ Delta</button>
+                    <button type="button" class="sort-btn" data-chart-sort="dataset">Dataset</button>
+                    <button type="button" class="sort-btn" data-chart-sort="jev">Jev</button>
+                    <button type="button" class="sort-btn" data-chart-sort="classic">Classical</button>
+                  </div>
+                </div>
+
+                <div class="vis-legend font-mono">
+                  <span class="vis-legend-item"><span class="vis-swatch jev"></span> Jev Zero-Shot</span>
+                  <span class="vis-legend-item"><span class="vis-swatch classic"></span> Best Classical ML</span>
+                  <span class="vis-legend-item"><span class="vis-swatch-line"></span> Range Span</span>
+                </div>
               </div>
             </div>
-            <div id="dumbbell-chart-wrap" class="chart-svg-container">
+
+            <!-- Desktop / Tablet Range SVG View -->
+            <div id="dumbbell-chart-wrap" class="chart-svg-container chart-desktop-view">
               __DUMBBELL_SVG__
             </div>
+
+            <!-- Dedicated Mobile Comparison Rows View -->
+            <div id="mobile-range-list" class="chart-mobile-view"></div>
           </div>
 
-          <!-- Diverging Difference Chart -->
-          <div class="vis-card">
+          <!-- 2. Secondary Visual: Zero-Centered Signed Difference Plot -->
+          <div class="vis-card vis-card-secondary">
             <div class="vis-head">
-              <div>
-                <h3 class="vis-title">Per-Dataset Difference (Δ)</h3>
-                <span class="font-mono text-muted" style="font-size: 0.6875rem;">Signed difference vs best classical pipeline (pp)</span>
+              <div class="vis-head-main">
+                <div class="vis-badge-tag font-mono">Secondary Visual · Signed Effect Size</div>
+                <h3 class="vis-title">Per-Dataset Signed Difference (Δ)</h3>
+                <p class="vis-subtitle font-mono">Zero-centered displacement (Jev zero-shot minus best classical pipeline in percentage points)</p>
               </div>
               <div class="vis-legend font-mono">
-                <span class="vis-legend-item">← Classical Lead</span>
-                <span class="vis-legend-item">Jev Lead →</span>
+                <span class="vis-legend-item"><span class="vis-swatch classic"></span> Classical Lead (&lt; 0)</span>
+                <span class="vis-legend-item"><span class="vis-swatch-zero"></span> 0.0 Parity</span>
+                <span class="vis-legend-item"><span class="vis-swatch jev"></span> Jev Lead (&gt; 0)</span>
               </div>
             </div>
-            <div id="diverging-chart-wrap" class="chart-svg-container">
+
+            <div id="diverging-chart-wrap" class="chart-svg-container chart-desktop-view">
               __DIVERGING_SVG__
             </div>
+
+            <div id="mobile-diff-list" class="chart-mobile-view"></div>
           </div>
         </div>
 
